@@ -24,7 +24,6 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 .nav-btn:hover{color:var(--moss);}
 .nav-btn.active{color:var(--forest);border-bottom-color:var(--amber);}
 .new-dot{width:8px;height:8px;border-radius:50%;background:var(--amber);display:none;}
-.has-new .new-dot{display:block;animation:blink 1.4s infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
 .view{display:none;}
 .view.active{display:block;animation:rise 0.35s ease;}
@@ -284,7 +283,6 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
           <div class="previews" id="previews"></div>
         </div>
       </div>
-
       <button class="submit-btn" id="submitBtn" onclick="submitRequest()">
         <span>Submit Maintenance Request</span><span style="font-size:18px;">→</span>
       </button>
@@ -302,8 +300,9 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
       <select class="admin-sel" id="adminSel">
         <option value="">— Select Your Name —</option>
         <option value="Abhiram">Abhiram</option>
-        <option value="Admin 2">Admin 2</option>
-        <option value="Admin 3">Admin 3</option>
+        <option value="Tiffany">Tiffany</option>
+        <option value="Catherine">Catherine</option>
+        <option value="Corey">Corey</option>
       </select>
       <span class="pin-lbl">Enter Your PIN</span>
       <div class="pin-row">
@@ -372,23 +371,24 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 
 <script>
 // ── EMAILJS CONFIG ───────────────────────────────────────────
-const EJS_PUBLIC_KEY   = 'ATOjvujTTzM_lQ2DZ';
-const EJS_SERVICE_ID   = 'service_tj53zwg';
-const EJS_TPL_NEW      = 'template_sld7lxw'; // admin new request alert
-const EJS_TPL_UPDATE   = 'template_brv56is'; // submitter status update
+const EJS_PUBLIC_KEY = 'ATOjvujTTzM_lQ2DZ';
+const EJS_SERVICE_ID = 'service_tj53zwg';
+const EJS_TPL_NEW    = 'template_sld7lxw'; // admin new request alert
+const EJS_TPL_UPDATE = 'template_brv56is'; // submitter status update
 emailjs.init(EJS_PUBLIC_KEY);
 
 // ── SUPABASE CONFIG ──────────────────────────────────────────
-const SUPABASE_URL  = 'https://rpdfkbvjqhhaubrvnepw.supabase.co';
-const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwZGZrYnZqcWhoYXVicnZuZXB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzQ1NzksImV4cCI6MjA4OTk1MDU3OX0.3qu_V8mGKhHxpvR1XUsmojoFNX2VIhLBryzBozEdzzQ';
-const TABLE         = 'maintenance_requests';
-const sb            = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_URL = 'https://rpdfkbvjqhhaubrvnepw.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwZGZrYnZqcWhoYXVicnZuZXB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzQ1NzksImV4cCI6MjA4OTk1MDU3OX0.3qu_V8mGKhHxpvR1XUsmojoFNX2VIhLBryzBozEdzzQ';
+const TABLE        = 'maintenance_requests';
+const sb           = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── ADMIN CREDENTIALS ────────────────────────────────────────
 const ADMINS = {
-  'Abhiram': '8118',
-  // 'Admin 2': 'PIN_HERE',
-  // 'Admin 3': 'PIN_HERE',
+  'Abhiram'  : '8118',
+  'Tiffany'  : '1234',
+  'Catherine': '5678',
+  'Corey'    : '9012',
 };
 
 // ── ADMIN MODE ───────────────────────────────────────────────
@@ -465,7 +465,7 @@ async function uploadPhotos(files, ticketId) {
   for (let i = 0; i < files.length; i++) {
     const f    = files[i];
     const path = `${ticketId}/photo${i+1}_${f.name}`;
-    const { data, error } = await sb.storage.from('maintenance-photos').upload(path, f, { upsert: true });
+    const { error } = await sb.storage.from('maintenance-photos').upload(path, f, { upsert: true });
     if (!error) {
       const { data: pub } = sb.storage.from('maintenance-photos').getPublicUrl(path);
       urls.push(pub.publicUrl);
@@ -476,10 +476,10 @@ async function uploadPhotos(files, ticketId) {
 
 // ── SUBMIT ───────────────────────────────────────────────────
 async function submitRequest() {
-  const get   = id => document.getElementById(id).value.trim();
-  const name  = get('f-name'), email = get('f-email');
-  const cat   = get('f-cat'),  loc   = get('f-loc'), title = get('f-title'), desc = get('f-desc');
-  const prio  = document.querySelector('input[name="prio"]:checked')?.value;
+  const get  = id => document.getElementById(id).value.trim();
+  const name = get('f-name'), email = get('f-email');
+  const cat  = get('f-cat'),  loc   = get('f-loc'), title = get('f-title'), desc = get('f-desc');
+  const prio = document.querySelector('input[name="prio"]:checked')?.value;
 
   if (!name||!email||!cat||!loc||!title||!desc||!prio) {
     showToast('Please fill in all required fields.','err'); return;
@@ -512,8 +512,8 @@ async function submitRequest() {
 
     if (error) throw error;
 
-    // Email admins about new submission
-    emailjs.send(EJS_SERVICE_ID, EJS_TPL_NEW, {
+    // Notify admins via EmailJS
+    await emailjs.send(EJS_SERVICE_ID, EJS_TPL_NEW, {
       ticket_id:   ticketId,
       title:       title,
       from_name:   name,
@@ -588,11 +588,11 @@ function filterReqs() {
 // ── RENDER CARDS ─────────────────────────────────────────────
 function catClass(c) {
   if (!c) return 'b-ot';
-  if (c.includes('IT'))        return 'b-it';
-  if (c.includes('General'))   return 'b-gm';
-  if (c.includes('Electrical'))return 'b-el';
-  if (c.includes('Plumbing'))  return 'b-pl';
-  if (c.includes('HVAC'))      return 'b-hv';
+  if (c.includes('IT'))         return 'b-it';
+  if (c.includes('General'))    return 'b-gm';
+  if (c.includes('Electrical')) return 'b-el';
+  if (c.includes('Plumbing'))   return 'b-pl';
+  if (c.includes('HVAC'))       return 'b-hv';
   return 'b-ot';
 }
 function statClass(s){return{Open:'s-open','In Progress':'s-prog','On Hold':'s-hold',Resolved:'s-done'}[s]||'s-open';}
@@ -700,8 +700,8 @@ async function updateReq(ticketId) {
 
     // Notify submitter of status change
     const req = allReqs.find(r => r.ticket_id === ticketId);
-    if (req) {
-      emailjs.send(EJS_SERVICE_ID, EJS_TPL_UPDATE, {
+    if (req && req.email) {
+      await emailjs.send(EJS_SERVICE_ID, EJS_TPL_UPDATE, {
         to_email:   req.email,
         to_name:    req.name,
         ticket_id:  ticketId,
@@ -711,7 +711,7 @@ async function updateReq(ticketId) {
       });
     }
 
-    showToast('✅ Request updated!', 'ok');
+    showToast('✅ Request updated & notification sent!', 'ok');
     const idx = allReqs.findIndex(r => r.ticket_id === ticketId);
     if (idx >= 0) Object.assign(allReqs[idx], { status, admin_note:note, supervisor, technician });
     updateStats();
