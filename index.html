@@ -6,6 +6,7 @@
 <title>Blue Ridge Maintenance Request</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <style>
 :root{--forest:#2C3E2D;--moss:#4A6741;--sage:#7A9E7E;--stone:#8B8070;--cream:#F5F0E8;--warm:#FDFAF5;--amber:#C8882A;--rust:#A0522D;--charcoal:#2A2A2A;--mist:#E8EDE4;--danger:#C0422A;--shadow:rgba(44,62,45,0.12);}
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -301,9 +302,8 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
       <select class="admin-sel" id="adminSel">
         <option value="">— Select Your Name —</option>
         <option value="Abhiram">Abhiram</option>
-        <option value="Corey">Corey</option>
-        <option value="Tiffany">Tiffany</option>
-         <option value="Catherine">Catherine</option>
+        <option value="Admin 2">Admin 2</option>
+        <option value="Admin 3">Admin 3</option>
       </select>
       <span class="pin-lbl">Enter Your PIN</span>
       <div class="pin-row">
@@ -371,6 +371,13 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 </div>
 
 <script>
+// ── EMAILJS CONFIG ───────────────────────────────────────────
+const EJS_PUBLIC_KEY   = 'ATOjvujTTzM_lQ2DZ';
+const EJS_SERVICE_ID   = 'service_tj53zwg';
+const EJS_TPL_NEW      = 'template_sld7lxw'; // admin new request alert
+const EJS_TPL_UPDATE   = 'template_brv56is'; // submitter status update
+emailjs.init(EJS_PUBLIC_KEY);
+
 // ── SUPABASE CONFIG ──────────────────────────────────────────
 const SUPABASE_URL  = 'https://rpdfkbvjqhhaubrvnepw.supabase.co';
 const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwZGZrYnZqcWhoYXVicnZuZXB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzQ1NzksImV4cCI6MjA4OTk1MDU3OX0.3qu_V8mGKhHxpvR1XUsmojoFNX2VIhLBryzBozEdzzQ';
@@ -380,9 +387,8 @@ const sb            = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // ── ADMIN CREDENTIALS ────────────────────────────────────────
 const ADMINS = {
   'Abhiram': '8118',
-  'Corey': '2004',
- 'Tiffany': '1914',
-  'Catherine': '8799'
+  // 'Admin 2': 'PIN_HERE',
+  // 'Admin 3': 'PIN_HERE',
 };
 
 // ── ADMIN MODE ───────────────────────────────────────────────
@@ -505,6 +511,18 @@ async function submitRequest() {
     });
 
     if (error) throw error;
+
+    // Email admins about new submission
+    emailjs.send(EJS_SERVICE_ID, EJS_TPL_NEW, {
+      ticket_id:   ticketId,
+      title:       title,
+      from_name:   name,
+      from_email:  email,
+      category:    cat,
+      location:    loc,
+      priority:    prio,
+      description: desc,
+    });
 
     document.getElementById('ticketDisplay').textContent = ticketId;
     document.getElementById('formBody').style.display    = 'none';
@@ -679,6 +697,20 @@ async function updateReq(ticketId) {
       updated_by: currentAdmin, updated_at: new Date().toISOString()
     }).eq('ticket_id', ticketId);
     if (error) throw error;
+
+    // Notify submitter of status change
+    const req = allReqs.find(r => r.ticket_id === ticketId);
+    if (req) {
+      emailjs.send(EJS_SERVICE_ID, EJS_TPL_UPDATE, {
+        to_email:   req.email,
+        to_name:    req.name,
+        ticket_id:  ticketId,
+        title:      req.title,
+        status:     status,
+        admin_note: note || 'No additional notes.',
+      });
+    }
+
     showToast('✅ Request updated!', 'ok');
     const idx = allReqs.findIndex(r => r.ticket_id === ticketId);
     if (idx >= 0) Object.assign(allReqs[idx], { status, admin_note:note, supervisor, technician });
