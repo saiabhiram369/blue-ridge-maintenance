@@ -18,12 +18,10 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 .hdr-title{font-family:'Playfair Display',serif;font-size:clamp(26px,5vw,46px);font-weight:700;color:#fff;line-height:1.15;letter-spacing:-0.5px;}
 .hdr-title em{color:var(--gold);font-style:normal;}
 .hdr-sub{color:rgba(255,255,255,0.5);font-size:13px;font-weight:300;margin-top:10px;letter-spacing:0.8px;text-transform:uppercase;}
-.mountain{display:block;width:100%;margin-top:-1px;}
 .nav-bar{background:var(--cream);border-bottom:2px solid var(--mist);display:flex;justify-content:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px var(--shadow);}
 .nav-btn{background:none;border:none;border-bottom:3px solid transparent;padding:14px 24px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--stone);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:7px;}
 .nav-btn:hover{color:var(--navy);}
 .nav-btn.active{color:var(--navy-dark);border-bottom-color:var(--gold);}
-.new-dot{width:8px;height:8px;border-radius:50%;background:var(--gold-dark);display:none;}
 .view{display:none;}
 .view.active{display:block;animation:rise 0.35s ease;}
 @keyframes rise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
@@ -99,10 +97,7 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 .st{background:#fff;border-radius:14px;padding:18px 20px;border:1px solid var(--mist);box-shadow:0 2px 12px var(--shadow);}
 .st-n{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;line-height:1;}
 .st-l{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--stone);margin-top:5px;}
-.st.open .st-n{color:var(--navy);}
-.st.prog .st-n{color:var(--gold-dark);}
-.st.hold .st-n{color:var(--stone);}
-.st.done .st-n{color:#4A8A3E;}
+.st.open .st-n{color:var(--navy);}.st.prog .st-n{color:var(--gold-dark);}.st.hold .st-n{color:var(--stone);}.st.done .st-n{color:#4A8A3E;}
 .filters{background:#fff;border-radius:14px;padding:14px 18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px;border:1px solid var(--mist);box-shadow:0 2px 8px var(--shadow);}
 .f-in{padding:8px 12px;border:1.5px solid #DDD8CE;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;color:var(--charcoal);background:var(--warm);outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
 .f-in:focus{border-color:var(--navy);}
@@ -122,12 +117,14 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 .p-low{background:#EBF5E9;color:#2E6B24;}.p-med{background:#FDF3E3;color:#9A6018;}.p-high{background:#FDEEE9;color:#8B3020;}.p-urg{background:#FDE8E8;color:#6B1010;animation:urgpulse 2s infinite;}
 @keyframes urgpulse{0%,100%{opacity:1;}50%{opacity:0.65;}}
 .s-open{background:#E8EEF5;color:#2D3D4F;}.s-prog{background:#FFF8E1;color:#C9A84C;}.s-hold{background:#F5F5F5;color:#616161;}.s-done{background:#E8F5E9;color:#2E7D32;}
+.b-ovr{background:#E8EAF6;color:#3949AB;}
 .card-right{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0;}
 .c-time{font-size:11px;color:var(--stone);}
 .expand-ico{font-size:13px;color:var(--stone);transition:transform 0.2s;}
 .req-card.open-body .expand-ico{transform:rotate(180deg);}
-.card-body{max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.3s ease;padding:0 20px;}
-.req-card.open-body .card-body{max-height:700px;padding:0 20px 20px;}
+.card-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.3s ease;padding:0 20px;}
+.req-card.open-body .card-body{max-height:1000px;padding:0 20px 20px;}
+.orig-prio-note{font-size:11px;color:var(--stone);margin-top:3px;}
 .detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
 @media(max-width:500px){.detail-grid{grid-template-columns:1fr;}}
 .det{background:var(--warm);border-radius:10px;padding:11px 13px;}
@@ -138,6 +135,25 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 .c-photos img{width:78px;height:78px;object-fit:cover;border-radius:8px;border:2px solid var(--mist);cursor:pointer;transition:transform 0.18s;}
 .c-photos img:hover{transform:scale(1.06);}
 .admin-note-box{background:#FFF8E1;border-left:3px solid var(--gold-dark);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:14px;line-height:1.6;}
+.override-notif-box{background:#E8F5E9;border-left:3px solid #2E7D32;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#1B5E20;line-height:1.6;}
+/* ── PRIORITY OVERRIDE ── */
+.override-section{background:#FFFBF0;border:1.5px dashed var(--gold-dark);border-radius:12px;padding:14px 16px;margin-bottom:12px;}
+.override-section .as-title{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--gold-dark);margin-bottom:12px;}
+.override-prio-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+@media(max-width:480px){.override-prio-grid{grid-template-columns:repeat(2,1fr);}}
+.opo input{display:none;}
+.opo label{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 4px;border-radius:9px;border:2px solid #DDD8CE;cursor:pointer;transition:all 0.18s;font-size:11px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:var(--stone);}
+.opo label .ico{font-size:20px;}
+.opo label:hover{border-color:var(--navy);}
+.opo.low input:checked+label{border-color:#4A8A3E;background:#EBF5E9;color:#2E6B24;}
+.opo.med input:checked+label{border-color:#C8882A;background:#FDF3E3;color:#9A6018;}
+.opo.high input:checked+label{border-color:#C05030;background:#FDEEE9;color:#8B3020;}
+.opo.urg input:checked+label{border-color:#8B1A1A;background:#FDE8E8;color:#6B1010;}
+.override-msg-row{margin-bottom:0;}
+.override-msg-row label{display:block;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--navy-dark);margin-bottom:6px;}
+.override-msg-row textarea{width:100%;padding:9px 12px;border:1.5px solid #DDD8CE;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;background:#fff;outline:none;resize:vertical;min-height:62px;line-height:1.5;transition:border-color 0.2s;}
+.override-msg-row textarea:focus{border-color:var(--navy);}
+/* ── END OVERRIDE ── */
 .actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center;padding-top:14px;border-top:1px solid var(--mist);}
 .act-sel{padding:8px 12px;border:1.5px solid #DDD8CE;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;background:var(--warm);outline:none;cursor:pointer;}
 .note-in{flex:1;min-width:180px;padding:8px 12px;border:1.5px solid #DDD8CE;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;}
@@ -183,14 +199,11 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
     <h1 class="hdr-title">Blue Ridge Preservation<br><em>Maintenance Request Form</em></h1>
     <p class="hdr-sub">Art of Living Retreat Center · Facility Services</p>
   </div>
-
 </header>
 
 <nav class="nav-bar">
   <button class="nav-btn active" id="navForm" onclick="showView('form')">📋 Submit Request</button>
-  <button class="nav-btn" id="navAdmin" onclick="showView('admin')" style="display:none;">
-    🔐 Admin Login <span class="new-dot"></span>
-  </button>
+  <button class="nav-btn" id="navAdmin" onclick="showView('admin')" style="display:none;">🔐 Admin Login</button>
 </nav>
 
 <div class="loader" id="loader"><div class="spin"></div><p id="loaderMsg">Processing…</p></div>
@@ -330,33 +343,24 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 </div>
 
 <script>
-// ── EMAILJS ──────────────────────────────────────────────────
 const EJS_PUBLIC_KEY = 'ATOjvujTTzM_lQ2DZ';
 const EJS_SERVICE_ID = 'service_rz1xa06';
 const EJS_TPL_NEW    = 'template_sld7lxw';
 const EJS_TPL_UPDATE = 'template_brv56is';
 emailjs.init(EJS_PUBLIC_KEY);
 
-// ── SUPABASE ─────────────────────────────────────────────────
 const SUPABASE_URL = 'https://rpdfkbvjqhhaubrvnepw.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwZGZrYnZqcWhoYXVicnZuZXB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzQ1NzksImV4cCI6MjA4OTk1MDU3OX0.3qu_V8mGKhHxpvR1XUsmojoFNX2VIhLBryzBozEdzzQ';
 const TABLE        = 'maintenance_requests';
 const sb           = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── ADMINS ───────────────────────────────────────────────────
-const ADMINS = {
-  'Abhiram'  : '8118',
-  'Tiffany'  : '1914',
-  'Catherine': '5678',
-  'Corey'    : '2004',
-};
-
+const ADMINS = {'Abhiram':'8118','Tiffany':'1914','Catherine':'5678','Corey':'2004'};
 const isAdminMode = new URLSearchParams(window.location.search).has('admin');
-if (isAdminMode) document.getElementById('navAdmin').style.display = 'flex';
+if(isAdminMode) document.getElementById('navAdmin').style.display = 'flex';
 
 let currentAdmin = null, allReqs = [], photoFiles = [];
 
-function showView(v) {
+function showView(v){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
   if(v==='admin'&&currentAdmin) v='dash';
@@ -372,7 +376,7 @@ document.querySelectorAll('.pin-d').forEach((el,i,a)=>{
   el.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!el.value&&i>0)a[i-1].focus();if(e.key==='Enter')doLogin();});
 });
 
-function doLogin() {
+function doLogin(){
   const name=document.getElementById('adminSel').value;
   const pin=['p1','p2','p3','p4'].map(id=>document.getElementById(id).value).join('');
   const err=document.getElementById('loginErr');
@@ -428,7 +432,8 @@ async function submitRequest(){
     const{error}=await sb.from(TABLE).insert({
       ticket_id:ticketId,timestamp:new Date().toISOString(),
       name,email,phone:get('f-phone')||null,
-      category:cat,location:loc,title,description:desc,priority:prio,
+      category:cat,location:loc,title,description:desc,
+      priority:prio,original_priority:prio,priority_overridden:false,
       status:'Open',photos:photoUrls
     });
     if(error) throw error;
@@ -492,6 +497,7 @@ function filterReqs(){
 function catClass(c){if(!c)return'b-ot';if(c.includes('IT'))return'b-it';if(c.includes('General'))return'b-gm';if(c.includes('Electrical'))return'b-el';if(c.includes('Plumbing'))return'b-pl';if(c.includes('HVAC'))return'b-hv';return'b-ot';}
 function statClass(s){return{Open:'s-open','In Progress':'s-prog','On Hold':'s-hold',Resolved:'s-done'}[s]||'s-open';}
 function prioClass(p){return{Low:'p-low',Medium:'p-med',High:'p-high',Urgent:'p-urg'}[p]||'p-low';}
+function prioEmoji(p){return{Low:'🟢',Medium:'🟡',High:'🟠',Urgent:'🔴'}[p]||'⚪';}
 function timeAgo(ts){if(!ts)return'';const m=Math.floor((Date.now()-new Date(ts))/60000);if(m<1)return'Just now';if(m<60)return m+'m ago';const h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
 
 function renderReqs(list){
@@ -500,8 +506,16 @@ function renderReqs(list){
   c.innerHTML=list.map(r=>{
     const photos=(r.photos||[]).map(u=>`<img src="${u}" onclick="lboxOpen('${u}')" alt="photo"/>`).join('');
     const noteBox=r.admin_note?`<div class="admin-note-box"><strong>Admin Note:</strong> ${r.admin_note}</div>`:'';
+    const overrideNotif=r.priority_overridden&&r.override_message
+      ?`<div class="override-notif-box">✅ <strong>Priority adjusted by admin</strong> — Requester notified: "${r.override_message}"</div>`:'';
+    const overriddenBadge=r.priority_overridden?`<span class="badge b-ovr">✏️ Overridden</span>`:'';
+    const origNote=r.priority_overridden&&r.original_priority
+      ?`<div class="orig-prio-note" style="margin-top:4px;">Originally submitted as: <strong>${prioEmoji(r.original_priority)} ${r.original_priority}</strong></div>`:'';
     const supFill=r.supervisor&&r.supervisor!=='';
     const techFill=r.technician&&r.technician!=='';
+    const tid=r.ticket_id.replace(/[^a-zA-Z0-9]/g,'');
+    const opoBtn=(p,val)=>`<div class="opo ${p}"><input type="radio" name="oprio-${tid}" id="op${val[0]}${tid}" value="${val}" ${r.priority===val?'checked':''}/><label for="op${val[0]}${tid}"><span class="ico">${prioEmoji(val)}</span>${val}</label></div>`;
+
     return`<div class="req-card" id="rc-${r.ticket_id}">
       <div class="card-hdr" onclick="toggleCard('${r.ticket_id}')">
         <div class="card-left">
@@ -509,12 +523,14 @@ function renderReqs(list){
           <div class="c-title">${r.title||'Untitled'}</div>
           <div class="c-meta">
             <span class="badge ${catClass(r.category)}">${r.category||'—'}</span>
-            <span class="badge ${prioClass(r.priority)}">${r.priority||'—'}</span>
+            <span class="badge ${prioClass(r.priority)}">${prioEmoji(r.priority)} ${r.priority||'—'}</span>
+            ${overriddenBadge}
             <span class="badge ${statClass(r.status)}">${r.status||'Open'}</span>
-            ${supFill?`<span class="badge" style="background:#E8EEF5;color:#2D3D4F;">👷 ${r.supervisor}</span>`:''}
+            ${supFill?`<span class="badge b-it">👷 ${r.supervisor}</span>`:''}
             ${techFill?`<span class="badge" style="background:#FFF8E1;color:#C9A84C;">🔧 ${r.technician}</span>`:''}
             <span style="font-size:11px;color:var(--stone)">📍 ${r.location||'—'}</span>
           </div>
+          ${origNote}
         </div>
         <div class="card-right"><span class="c-time">${timeAgo(r.timestamp)}</span><span class="expand-ico">▾</span></div>
       </div>
@@ -527,11 +543,22 @@ function renderReqs(list){
         </div>
         <div class="c-desc">${r.description||'No description.'}</div>
         ${photos?`<div class="c-photos">${photos}</div>`:''}
+        ${overrideNotif}
         ${noteBox}
         <div class="workflow-trail">
           <div class="wt-step filled">📋 Submitted</div><div class="wt-arrow">→</div>
           <div class="wt-step ${supFill?'filled':''}">👷 ${supFill?r.supervisor:'Unassigned'}</div><div class="wt-arrow">→</div>
           <div class="wt-step ${techFill?'filled':''}">🔧 ${techFill?r.technician:'Unassigned'}</div>
+        </div>
+        <div class="override-section">
+          <div class="as-title">✏️ Override Priority</div>
+          <div class="override-prio-grid">
+            ${opoBtn('low','Low')}${opoBtn('med','Medium')}${opoBtn('high','High')}${opoBtn('urg','Urgent')}
+          </div>
+          <div class="override-msg-row">
+            <label>Message to Requester <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+            <textarea id="omsg-${r.ticket_id}" placeholder="e.g. We've reviewed your request and adjusted the priority accordingly…">${r.override_message||''}</textarea>
+          </div>
         </div>
         <div class="assign-section">
           <div class="as-title">🗂 Assignment</div>
@@ -563,24 +590,47 @@ async function updateReq(ticketId){
   const note=document.getElementById('note-'+ticketId).value.trim();
   const supervisor=document.getElementById('sup-'+ticketId).value.trim();
   const technician=document.getElementById('tech-'+ticketId).value.trim();
+  const overrideMsg=document.getElementById('omsg-'+ticketId).value.trim();
+  const tid=ticketId.replace(/[^a-zA-Z0-9]/g,'');
+  const selectedPrio=document.querySelector(`input[name="oprio-${tid}"]:checked`)?.value;
+  const origReq=allReqs.find(r=>r.ticket_id===ticketId);
+  const origPrio=origReq?.original_priority||origReq?.priority;
+  const wasOverridden=!!(selectedPrio&&selectedPrio!==origPrio);
+
   showLoader('Saving…');
   try{
-    const{error}=await sb.from(TABLE).update({
+    const payload={
       status,admin_note:note,supervisor,technician,
-      updated_by:currentAdmin,updated_at:new Date().toISOString()
-    }).eq('ticket_id',ticketId);
-    if(error) throw error;
-    const req=allReqs.find(r=>r.ticket_id===ticketId);
-    if(req&&req.email){
-      emailjs.send(EJS_SERVICE_ID,EJS_TPL_UPDATE,{
-        to_email:req.email,to_name:req.name,
-        ticket_id:ticketId,title:req.title,
-        status,admin_note:note||'No additional notes.'
-      }).catch(e=>console.warn('Email:',e));
+      updated_by:currentAdmin,updated_at:new Date().toISOString(),
+      override_message:overrideMsg||null
+    };
+    if(selectedPrio){
+      payload.priority=selectedPrio;
+      payload.priority_overridden=wasOverridden;
     }
-    showToast('✅ Request updated!','ok');
+    const{error}=await sb.from(TABLE).update(payload).eq('ticket_id',ticketId);
+    if(error) throw error;
+
+    if(origReq&&origReq.email){
+      const emailParams={
+        to_email:origReq.email,to_name:origReq.name,
+        ticket_id:ticketId,title:origReq.title,
+        status,admin_note:note||'No additional notes.'
+      };
+      if(wasOverridden&&overrideMsg){
+        emailParams.priority_note=`Your priority has been adjusted from ${origPrio} to ${selectedPrio}. Reason: ${overrideMsg}`;
+      }
+      emailjs.send(EJS_SERVICE_ID,EJS_TPL_UPDATE,emailParams).catch(e=>console.warn('Email:',e));
+    }
+
+    showToast(wasOverridden?'✅ Priority overridden & requester notified!':'✅ Request updated!','ok');
     const idx=allReqs.findIndex(r=>r.ticket_id===ticketId);
-    if(idx>=0) Object.assign(allReqs[idx],{status,admin_note:note,supervisor,technician});
+    if(idx>=0) Object.assign(allReqs[idx],{
+      status,admin_note:note,supervisor,technician,
+      priority:selectedPrio||allReqs[idx].priority,
+      priority_overridden:wasOverridden,
+      override_message:overrideMsg||null
+    });
     updateStats();filterReqs();
   }catch(e){
     showToast('Update failed: '+e.message,'err');
