@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <style>
-:root{--navy:#3D4F63;--navy-dark:#2D3D4F;--navy-light:#4E6278;--gold:#E8C97A;--gold-dark:#C9A84C;--cream:#FAF6EE;--warm:#FFFDF8;--charcoal:#1E2A35;--stone:#7A8C9A;--mist:#E8EEF2;--danger:#C0422A;--shadow:rgba(45,61,79,0.12);}
+:root{--navy:#3D4F63;--navy-dark:#2D3D4F;--navy-light:#4E6278;--gold:#E8C97A;--gold-dark:#C9A84C;--cream:#FAF6EE;--warm:#FFFDF8;--charcoal:#1E2A35;--stone:#7A8C9A;--mist:#E8EEF2;--danger:#C0422A;--shadow:rgba(45,61,79,0.12);--tiffany:#008B9A;--tiffany-light:#E0F5F7;--tech-amber:#C8882A;--tech-amber-light:#FDF3E3;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--charcoal);min-height:100vh;}
 .site-header{background:var(--navy-dark);position:relative;overflow:hidden;}
@@ -22,6 +22,8 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 .nav-btn{background:none;border:none;border-bottom:3px solid transparent;padding:14px 24px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--stone);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:7px;}
 .nav-btn:hover{color:var(--navy);}
 .nav-btn.active{color:var(--navy-dark);border-bottom-color:var(--gold);}
+.nav-btn.tech-nav{color:var(--tech-amber);}
+.nav-btn.tech-nav.active{border-bottom-color:var(--tech-amber);}
 .view{display:none;}
 .view.active{display:block;animation:rise 0.35s ease;}
 @keyframes rise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
@@ -70,6 +72,8 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 .ticket{display:inline-block;background:var(--cream);border:1.5px solid #DDD8CE;border-radius:10px;padding:10px 24px;font-family:monospace;font-size:21px;font-weight:700;color:var(--navy-dark);margin:18px 0;letter-spacing:3px;}
 .again-btn{background:none;border:2px solid var(--navy);color:var(--navy);padding:11px 28px;border-radius:10px;font-family:'Source Sans 3',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:10px;transition:all 0.2s;}
 .again-btn:hover{background:var(--navy);color:#fff;}
+
+/* ── ADMIN LOGIN ── */
 .login-wrap{max-width:420px;margin:72px auto;padding:0 20px;}
 .login-card{background:#fff;border-radius:22px;padding:46px 38px;box-shadow:0 8px 52px var(--shadow);border:1px solid var(--mist);text-align:center;}
 .login-logo{width:68px;height:68px;background:linear-gradient(135deg,var(--navy-dark),var(--navy-light));border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 20px;}
@@ -84,20 +88,28 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 .login-btn{width:100%;padding:14px;background:linear-gradient(130deg,var(--navy-dark),var(--navy-light));color:#fff;border:none;border-radius:10px;font-family:'Source Sans 3',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;}
 .login-btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(45,61,79,0.3);}
 .login-err{color:var(--danger);font-size:13px;margin-top:13px;padding:10px 14px;background:#FDE8E8;border-radius:8px;display:none;}
+
+/* ── TECH LOGIN ── */
+.tech-login-card{border-top:4px solid var(--tech-amber);}
+.tech-login-card .login-logo{background:linear-gradient(135deg,var(--tech-amber),#E6991A);}
+.tech-login-card .login-btn{background:linear-gradient(130deg,var(--tech-amber),#E6991A);}
+
+/* ── DASHBOARD ── */
 .dash-wrap{max-width:1100px;margin:0 auto;padding:32px 20px 80px;}
 .dash-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:26px;}
 .dash-top h2{font-family:'Playfair Display',serif;font-size:30px;color:var(--navy-dark);}
 .dash-top p{font-size:13px;color:var(--stone);margin-top:4px;}
 .chip-row{display:flex;align-items:center;gap:10px;}
 .chip{background:var(--cream);border:1px solid #DDD8CE;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;color:var(--navy-dark);}
+.chip.tiffany-chip{background:var(--tiffany-light);border-color:var(--tiffany);color:var(--tiffany);}
 .logout{background:none;border:1.5px solid #DDD8CE;color:var(--stone);padding:7px 14px;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;cursor:pointer;transition:all 0.2s;}
 .logout:hover{border-color:var(--danger);color:var(--danger);}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
-@media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr);}}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px;}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr);}}
 .st{background:#fff;border-radius:14px;padding:18px 20px;border:1px solid var(--mist);box-shadow:0 2px 12px var(--shadow);}
 .st-n{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;line-height:1;}
 .st-l{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--stone);margin-top:5px;}
-.st.open .st-n{color:var(--navy);}.st.prog .st-n{color:var(--gold-dark);}.st.hold .st-n{color:var(--stone);}.st.done .st-n{color:#4A8A3E;}
+.st.open .st-n{color:var(--navy);}.st.prog .st-n{color:var(--gold-dark);}.st.hold .st-n{color:var(--stone);}.st.done .st-n{color:#4A8A3E;}.st.notes .st-n{color:var(--tech-amber);}
 .filters{background:#fff;border-radius:14px;padding:14px 18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px;border:1px solid var(--mist);box-shadow:0 2px 8px var(--shadow);}
 .f-in{padding:8px 12px;border:1.5px solid #DDD8CE;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;color:var(--charcoal);background:var(--warm);outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
 .f-in:focus{border-color:var(--navy);}
@@ -105,8 +117,9 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 .ref-btn{padding:8px 16px;background:var(--cream);border:1.5px solid #DDD8CE;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;color:var(--navy-dark);cursor:pointer;transition:all 0.2s;white-space:nowrap;}
 .ref-btn:hover{background:var(--mist);}
 .cards-list{display:flex;flex-direction:column;gap:12px;}
-.req-card{background:#fff;border-radius:14px;border:1px solid var(--mist);box-shadow:0 2px 12px var(--shadow);overflow:hidden;transition:box-shadow 0.2s;}
+.req-card{background:#fff;border-radius:14px;border:1px solid var(--mist);box-shadow:0 2px 12px var(--shadow);overflow:hidden;transition:box-shadow 0.2s,border-color 0.2s;}
 .req-card:hover{box-shadow:0 6px 24px rgba(45,61,79,0.13);}
+.req-card.has-new-note{border-color:var(--tech-amber);box-shadow:0 2px 16px rgba(200,136,42,0.18);}
 .card-hdr{padding:16px 20px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;cursor:pointer;user-select:none;}
 .card-left{flex:1;}
 .c-id{font-size:10px;font-weight:800;letter-spacing:2px;color:var(--stone);margin-bottom:3px;}
@@ -116,14 +129,16 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 .b-it{background:#E8EEF5;color:#2D3D4F;}.b-gm{background:#E8F5E9;color:#2E7D32;}.b-el{background:#FFF3E0;color:#E65100;}.b-pl{background:#E3F2FD;color:#0D47A1;}.b-hv{background:#F3E5F5;color:#6A1B9A;}.b-ot{background:#F5F5F5;color:#616161;}
 .p-low{background:#EBF5E9;color:#2E6B24;}.p-med{background:#FDF3E3;color:#9A6018;}.p-high{background:#FDEEE9;color:#8B3020;}.p-urg{background:#FDE8E8;color:#6B1010;animation:urgpulse 2s infinite;}
 @keyframes urgpulse{0%,100%{opacity:1;}50%{opacity:0.65;}}
-.s-open{background:#E8EEF5;color:#2D3D4F;}.s-prog{background:#FFF8E1;color:#C9A84C;}.s-hold{background:#F5F5F5;color:#616161;}.s-done{background:#E8F5E9;color:#2E7D32;}
+.s-open{background:#E8EEF5;color:#2D3D4F;}.s-prog{background:#FFF8E1;color:#C9A84C;}.s-hold{background:#F5F5F5;color:#616161;}.s-done{background:#E8F5E9;color:#2E7D32;}.s-ptiff{background:var(--tiffany-light);color:var(--tiffany);}
 .b-ovr{background:#E8EAF6;color:#3949AB;}
+.b-new-note{background:var(--tech-amber-light);color:var(--tech-amber);animation:notepulse 1.8s infinite;}
+@keyframes notepulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
 .card-right{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0;}
 .c-time{font-size:11px;color:var(--stone);}
 .expand-ico{font-size:13px;color:var(--stone);transition:transform 0.2s;}
 .req-card.open-body .expand-ico{transform:rotate(180deg);}
 .card-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.3s ease;padding:0 20px;}
-.req-card.open-body .card-body{max-height:1000px;padding:0 20px 20px;}
+.req-card.open-body .card-body{max-height:2000px;padding:0 20px 20px;}
 .orig-prio-note{font-size:11px;color:var(--stone);margin-top:3px;}
 .detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
 @media(max-width:500px){.detail-grid{grid-template-columns:1fr;}}
@@ -136,6 +151,15 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 .c-photos img:hover{transform:scale(1.06);}
 .admin-note-box{background:#FFF8E1;border-left:3px solid var(--gold-dark);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:14px;line-height:1.6;}
 .override-notif-box{background:#E8F5E9;border-left:3px solid #2E7D32;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#1B5E20;line-height:1.6;}
+
+/* ── TECH NOTE BOX (admin view) ── */
+.tech-note-banner{background:var(--tech-amber-light);border:1.5px solid var(--tech-amber);border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.tech-note-content{flex:1;}
+.tech-note-content .tn-label{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--tech-amber);margin-bottom:5px;}
+.tech-note-content .tn-text{font-size:14px;color:var(--charcoal);line-height:1.6;}
+.mark-read-btn{padding:7px 14px;background:#fff;border:1.5px solid var(--tech-amber);border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:12px;font-weight:700;color:var(--tech-amber);cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;}
+.mark-read-btn:hover{background:var(--tech-amber);color:#fff;}
+
 /* ── PRIORITY OVERRIDE ── */
 .override-section{background:#FFFBF0;border:1.5px dashed var(--gold-dark);border-radius:12px;padding:14px 16px;margin-bottom:12px;}
 .override-section .as-title{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--gold-dark);margin-bottom:12px;}
@@ -153,25 +177,61 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 .override-msg-row label{display:block;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--navy-dark);margin-bottom:6px;}
 .override-msg-row textarea{width:100%;padding:9px 12px;border:1.5px solid #DDD8CE;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;background:#fff;outline:none;resize:vertical;min-height:62px;line-height:1.5;transition:border-color 0.2s;}
 .override-msg-row textarea:focus{border-color:var(--navy);}
-/* ── END OVERRIDE ── */
-.actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center;padding-top:14px;border-top:1px solid var(--mist);}
-.act-sel{padding:8px 12px;border:1.5px solid #DDD8CE;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;background:var(--warm);outline:none;cursor:pointer;}
-.note-in{flex:1;min-width:180px;padding:8px 12px;border:1.5px solid #DDD8CE;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;}
-.note-in:focus{border-color:var(--navy);}
-.upd-btn{padding:9px 18px;background:linear-gradient(130deg,var(--navy-dark),var(--navy-light));color:#fff;border:none;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;}
-.upd-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(45,61,79,0.28);}
-.c-footer{font-size:11px;color:var(--stone);margin-top:8px;}
+
+/* ── WORKFLOW TRAIL (5 steps) ── */
+.workflow-trail{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:12px;margin-bottom:12px;}
+.wt-step{background:#fff;border:1px solid var(--mist);border-radius:8px;padding:5px 10px;color:var(--stone);font-weight:600;}
+.wt-step.filled{background:var(--mist);border-color:var(--navy);color:var(--navy-dark);}
+.wt-step.active-step{background:var(--navy-dark);border-color:var(--navy-dark);color:#fff;}
+.wt-arrow{color:#CCC;font-size:13px;}
+
+/* ── STATUS SELECT (Tiffany-only for Resolved) ── */
+.status-actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.stat-opt-btn{padding:8px 16px;border-radius:8px;border:1.5px solid #DDD8CE;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;background:#fff;color:var(--stone);}
+.stat-opt-btn:hover:not(:disabled){border-color:var(--navy);color:var(--navy-dark);}
+.stat-opt-btn.selected{background:var(--navy-dark);color:#fff;border-color:var(--navy-dark);}
+.stat-opt-btn.tiffany-only{border-color:var(--tiffany);color:var(--tiffany);}
+.stat-opt-btn.tiffany-only.selected{background:var(--tiffany);color:#fff;}
+.stat-opt-btn.locked{opacity:0.4;cursor:not-allowed;}
+.tiffany-lock-note{font-size:11px;color:var(--tiffany);display:flex;align-items:center;gap:4px;padding:5px 0;}
+
+/* ── TECH PORTAL ── */
+.tech-dash-wrap{max-width:900px;margin:0 auto;padding:32px 20px 80px;}
+.tech-hero{background:linear-gradient(130deg,#7A5C1E 0%,#C8882A 100%);border-radius:18px;padding:26px 30px;color:#fff;margin-bottom:26px;display:flex;justify-content:space-between;align-items:center;gap:20px;}
+.tech-hero h2{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:5px;}
+.tech-hero p{font-size:14px;opacity:0.7;font-weight:300;}
+.tech-hero-emoji{font-size:54px;opacity:0.25;flex-shrink:0;}
+.lock-notice{background:var(--tiffany-light);border:1.5px solid var(--tiffany);border-radius:12px;padding:14px 18px;margin-bottom:22px;display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--tiffany);line-height:1.55;}
+.lock-notice .ln-icon{font-size:20px;flex-shrink:0;}
+.tech-card{background:#fff;border-radius:14px;border:1px solid var(--mist);box-shadow:0 2px 12px var(--shadow);overflow:hidden;margin-bottom:12px;}
+.tech-card-hdr{padding:16px 20px;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.tech-card.open-body .expand-ico{transform:rotate(180deg);}
+.tech-card-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.3s ease;padding:0 20px;}
+.tech-card.open-body .tech-card-body{max-height:1200px;padding:0 20px 20px;}
+.tech-note-section{background:var(--warm);border-radius:12px;padding:16px;border:1px solid var(--mist);}
+.tech-note-section label{display:block;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--navy-dark);margin-bottom:8px;}
+.tech-note-section textarea{width:100%;padding:11px 14px;border:1.5px solid #DDD8CE;border-radius:10px;font-family:'Source Sans 3',sans-serif;font-size:14px;color:var(--charcoal);background:#fff;outline:none;resize:vertical;min-height:110px;line-height:1.6;transition:border-color 0.2s;}
+.tech-note-section textarea:focus{border-color:var(--tech-amber);box-shadow:0 0 0 3px rgba(200,136,42,0.1);}
+.save-note-btn{margin-top:10px;padding:11px 24px;background:linear-gradient(130deg,#7A5C1E,var(--tech-amber));color:#fff;border:none;border-radius:10px;font-family:'Source Sans 3',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.save-note-btn:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(200,136,42,0.3);}
+.existing-note-box{background:var(--tech-amber-light);border:1.5px solid var(--tech-amber);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:14px;line-height:1.6;color:var(--charcoal);}
+.existing-note-box .en-label{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--tech-amber);margin-bottom:5px;}
+
+/* ── ASSIGNMENT (tech dropdown) ── */
 .assign-section{background:var(--warm);border-radius:12px;padding:14px 16px;margin-bottom:12px;border:1px solid var(--mist);}
 .assign-section .as-title{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--navy);margin-bottom:12px;}
 .assign-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 @media(max-width:500px){.assign-row{grid-template-columns:1fr;}}
 .assign-field label{display:block;font-size:10px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:var(--navy-dark);margin-bottom:5px;}
-.assign-field input{width:100%;padding:8px 11px;border:1.5px solid #DDD8CE;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;background:#fff;outline:none;transition:border-color 0.2s;}
-.assign-field input:focus{border-color:var(--navy);}
-.workflow-trail{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:12px;margin-bottom:12px;}
-.wt-step{background:#fff;border:1px solid var(--mist);border-radius:8px;padding:5px 10px;color:var(--stone);font-weight:600;}
-.wt-step.filled{background:var(--mist);border-color:var(--navy);color:var(--navy-dark);}
-.wt-arrow{color:#CCC;font-size:13px;}
+.assign-field input,.assign-field select{width:100%;padding:8px 11px;border:1.5px solid #DDD8CE;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;background:#fff;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
+.assign-field input:focus,.assign-field select:focus{border-color:var(--navy);}
+
+.actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center;padding-top:14px;border-top:1px solid var(--mist);}
+.note-in{flex:1;min-width:180px;padding:8px 12px;border:1.5px solid #DDD8CE;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;}
+.note-in:focus{border-color:var(--navy);}
+.upd-btn{padding:9px 18px;background:linear-gradient(130deg,var(--navy-dark),var(--navy-light));color:#fff;border:none;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.upd-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(45,61,79,0.28);}
+.c-footer{font-size:11px;color:var(--stone);margin-top:8px;}
 .empty{text-align:center;padding:56px 24px;color:var(--stone);}
 .empty .ei{font-size:44px;margin-bottom:14px;opacity:0.35;}
 .empty h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--charcoal);margin-bottom:6px;}
@@ -181,8 +241,7 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 .lbox-x{position:absolute;top:20px;right:28px;color:#fff;font-size:38px;cursor:pointer;}
 .toast{position:fixed;bottom:26px;right:26px;background:var(--navy-dark);color:#fff;padding:13px 20px;border-radius:12px;font-size:14px;font-weight:700;box-shadow:0 6px 28px rgba(0,0,0,0.22);z-index:8000;transform:translateY(80px);opacity:0;transition:all 0.3s;max-width:340px;}
 .toast.show{transform:translateY(0);opacity:1;}
-.toast.ok{background:#2E7D32;}
-.toast.err{background:var(--danger);}
+.toast.ok{background:#2E7D32;}.toast.err{background:var(--danger);}.toast.info{background:var(--tech-amber);}
 .loader{display:none;position:fixed;inset:0;background:rgba(255,253,248,0.82);z-index:5000;align-items:center;justify-content:center;flex-direction:column;gap:13px;}
 .loader.on{display:flex;}
 .spin{width:42px;height:42px;border:4px solid var(--mist);border-top-color:var(--navy);border-radius:50%;animation:sp 0.75s linear infinite;}
@@ -203,14 +262,17 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 
 <nav class="nav-bar">
   <button class="nav-btn active" id="navForm" onclick="showView('form')">📋 Submit Request</button>
-  <button class="nav-btn" id="navAdmin" onclick="showView('admin')" style="display:none;">🔐 Admin Login</button>
+  <button class="nav-btn" id="navAdmin" onclick="showView('admin')">🔐 Admin Login</button>
+  <button class="nav-btn tech-nav" id="navTech" onclick="showView('tech-login')">🔧 Tech Login</button>
 </nav>
 
 <div class="loader" id="loader"><div class="spin"></div><p id="loaderMsg">Processing…</p></div>
 <div class="toast" id="toast"></div>
 <div class="lbox" id="lbox" onclick="lboxClose()"><span class="lbox-x">&times;</span><img id="lboxImg" src="" alt=""/></div>
 
-<!-- FORM VIEW -->
+<!-- ═══════════════════════════════════════════════
+     FORM VIEW
+═══════════════════════════════════════════════ -->
 <div class="view active" id="viewForm">
   <div class="form-wrap">
     <div class="success" id="successScreen">
@@ -223,10 +285,7 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
     </div>
     <div id="formBody">
       <div class="hero-band">
-        <div class="hero-text">
-          <h2>Report a Facility Issue</h2>
-          <p>Use this form to submit a maintenance or IT request for the retreat center.</p>
-        </div>
+        <div class="hero-text"><h2>Report a Facility Issue</h2><p>Use this form to submit a maintenance or IT request for the retreat center.</p></div>
         <div class="hero-emoji">🔧</div>
       </div>
       <div class="card">
@@ -279,7 +338,9 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
   </div>
 </div>
 
-<!-- ADMIN LOGIN VIEW -->
+<!-- ═══════════════════════════════════════════════
+     ADMIN LOGIN VIEW
+═══════════════════════════════════════════════ -->
 <div class="view" id="viewAdmin">
   <div class="login-wrap">
     <div class="login-card">
@@ -306,7 +367,36 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
   </div>
 </div>
 
-<!-- DASHBOARD VIEW -->
+<!-- ═══════════════════════════════════════════════
+     TECH LOGIN VIEW
+═══════════════════════════════════════════════ -->
+<div class="view" id="viewTechLogin">
+  <div class="login-wrap">
+    <div class="login-card tech-login-card">
+      <div class="login-logo">🔧</div>
+      <h2>Technician Portal</h2>
+      <p>Select your name and enter your 4-digit PIN to view your assigned work orders.</p>
+      <select class="admin-sel" id="techSel">
+        <option value="">— Select Your Name —</option>
+        <option value="Ethan">Ethan</option>
+        <option value="Eric">Eric</option>
+      </select>
+      <span class="pin-lbl">Enter Your PIN</span>
+      <div class="pin-row">
+        <input class="pin-d" type="password" maxlength="1" inputmode="numeric" id="tp1"/>
+        <input class="pin-d" type="password" maxlength="1" inputmode="numeric" id="tp2"/>
+        <input class="pin-d" type="password" maxlength="1" inputmode="numeric" id="tp3"/>
+        <input class="pin-d" type="password" maxlength="1" inputmode="numeric" id="tp4"/>
+      </div>
+      <button class="login-btn" onclick="doTechLogin()">Access My Work Orders →</button>
+      <div class="login-err" id="techLoginErr"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     ADMIN DASHBOARD VIEW
+═══════════════════════════════════════════════ -->
 <div class="view" id="viewDash">
   <div class="dash-wrap">
     <div class="dash-top">
@@ -321,11 +411,13 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
       <div class="st prog"><div class="st-n" id="sProg">—</div><div class="st-l">In Progress</div></div>
       <div class="st hold"><div class="st-n" id="sHold">—</div><div class="st-l">On Hold</div></div>
       <div class="st done"><div class="st-n" id="sDone">—</div><div class="st-l">Resolved</div></div>
+      <div class="st notes"><div class="st-n" id="sNotes">—</div><div class="st-l">🔔 New Notes</div></div>
     </div>
     <div class="filters">
       <input class="f-in f-search" type="text" placeholder="🔍  Search name, location, ticket ID…" oninput="filterReqs()"/>
       <select class="f-in" id="fStat" onchange="filterReqs()">
-        <option value="">All Statuses</option><option>Open</option><option>In Progress</option><option>On Hold</option><option>Resolved</option>
+        <option value="">All Statuses</option><option>Open</option><option>In Progress</option><option>On Hold</option>
+        <option>Pending Tiffany</option><option>Resolved</option>
       </select>
       <select class="f-in" id="fCat" onchange="filterReqs()">
         <option value="">All Categories</option><option value="IT / Technology">IT / Tech</option>
@@ -336,13 +428,39 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
         <option value="">All Priorities</option><option value="Urgent">🔴 Urgent</option>
         <option value="High">🟠 High</option><option value="Medium">🟡 Medium</option><option value="Low">🟢 Low</option>
       </select>
+      <select class="f-in" id="fTech" onchange="filterReqs()">
+        <option value="">All Technicians</option><option>Ethan</option><option>Eric</option><option>Other</option><option value="unassigned">Unassigned</option>
+      </select>
       <button class="ref-btn" onclick="loadReqs()">🔄 Refresh</button>
     </div>
     <div class="cards-list" id="cardsList"></div>
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════
+     TECH DASHBOARD VIEW
+═══════════════════════════════════════════════ -->
+<div class="view" id="viewTech">
+  <div class="tech-dash-wrap">
+    <div class="tech-hero">
+      <div class="hero-text">
+        <h2 id="techWelcome">Welcome, Technician</h2>
+        <p>Your assigned work orders are below. Add progress notes to keep the team updated.</p>
+      </div>
+      <div class="tech-hero-emoji">🔧</div>
+    </div>
+    <div class="lock-notice">
+      <span class="ln-icon">🔒</span>
+      <div>You can view your assigned tickets and add progress notes. <strong>Status changes are managed by Tiffany</strong> — she will mark tickets complete when the work is verified.</div>
+    </div>
+    <div class="cards-list" id="techCardsList"></div>
+  </div>
+</div>
+
 <script>
+/* ═══════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════ */
 const EJS_PUBLIC_KEY = 'ATOjvujTTzM_lQ2DZ';
 const EJS_SERVICE_ID = 'service_rz1xa06';
 const EJS_TPL_NEW    = 'template_sld7lxw';
@@ -351,172 +469,299 @@ emailjs.init(EJS_PUBLIC_KEY);
 
 const SUPABASE_URL = 'https://rpdfkbvjqhhaubrvnepw.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwZGZrYnZqcWhoYXVicnZuZXB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzQ1NzksImV4cCI6MjA4OTk1MDU3OX0.3qu_V8mGKhHxpvR1XUsmojoFNX2VIhLBryzBozEdzzQ';
-const TABLE        = 'maintenance_requests';
-const sb           = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const TABLE = 'maintenance_requests';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* ── Replace with real admin email addresses ── */
+const ADMIN_EMAILS = {
+  Abhiram: 'abhiram@artoflivingretreat.org',
+  Tiffany: 'tiffany@artoflivingretreat.org',
+  Catherine: 'catherine@artoflivingretreat.org',
+  Corey: 'corey@artoflivingretreat.org'
+};
 
 const ADMINS = {'Abhiram':'8118','Tiffany':'1914','Catherine':'8799','Corey':'2004'};
-const isAdminMode = new URLSearchParams(window.location.search).has('admin');
-if(isAdminMode) document.getElementById('navAdmin').style.display = 'flex';
+const TECHNICIANS = {'Ethan':'1234','Eric':'5678'};
 
-let currentAdmin = null, allReqs = [], photoFiles = [];
+/* All nav buttons are always visible */
 
-function showView(v){
-  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
-  if(v==='admin'&&currentAdmin) v='dash';
-  const map={form:'viewForm',admin:'viewAdmin',dash:'viewDash'};
-  const navMap={form:'navForm',admin:'navAdmin',dash:'navAdmin'};
+let currentAdmin = null, currentTech = null, allReqs = [], photoFiles = [];
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════ */
+function showView(v) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  if(v === 'admin' && currentAdmin) v = 'dash';
+  if(v === 'tech-login' && currentTech) v = 'tech';
+  const map = {form:'viewForm', admin:'viewAdmin', dash:'viewDash', 'tech-login':'viewTechLogin', tech:'viewTech'};
+  const navMap = {form:'navForm', admin:'navAdmin', dash:'navAdmin', 'tech-login':'navTech', tech:'navTech'};
   document.getElementById(map[v]).classList.add('active');
-  document.getElementById(navMap[v]).classList.add('active');
-  if(v==='dash') loadReqs();
+  const nb = document.getElementById(navMap[v]);
+  if(nb) nb.classList.add('active');
+  if(v === 'dash') loadReqs();
+  if(v === 'tech') loadTechReqs();
 }
 
-document.querySelectorAll('.pin-d').forEach((el,i,a)=>{
-  el.addEventListener('input',()=>{if(el.value&&i<a.length-1)a[i+1].focus();});
-  el.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!el.value&&i>0)a[i-1].focus();if(e.key==='Enter')doLogin();});
+/* ═══════════════════════════════════════
+   ADMIN PIN INPUT BEHAVIOR
+═══════════════════════════════════════ */
+document.querySelectorAll('.pin-d').forEach((el, i, a) => {
+  el.addEventListener('input', () => { if(el.value && i < a.length - 1) a[i+1].focus(); });
+  el.addEventListener('keydown', e => {
+    if(e.key === 'Backspace' && !el.value && i > 0) a[i-1].focus();
+    if(e.key === 'Enter') {
+      const inTechLogin = el.closest('#viewTechLogin');
+      inTechLogin ? doTechLogin() : doLogin();
+    }
+  });
 });
 
-function doLogin(){
-  const name=document.getElementById('adminSel').value;
-  const pin=['p1','p2','p3','p4'].map(id=>document.getElementById(id).value).join('');
-  const err=document.getElementById('loginErr');
-  err.style.display='none';
-  if(!name){err.textContent='⚠ Please select your name.';err.style.display='block';return;}
-  if(pin.length<4){err.textContent='⚠ Please enter your full 4-digit PIN.';err.style.display='block';return;}
-  if(ADMINS[name]!==pin){
-    err.textContent='❌ Incorrect PIN. Please try again.';err.style.display='block';
-    ['p1','p2','p3','p4'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('p1').focus();return;
+/* ═══════════════════════════════════════
+   ADMIN LOGIN / LOGOUT
+═══════════════════════════════════════ */
+function doLogin() {
+  const name = document.getElementById('adminSel').value;
+  const pin = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value).join('');
+  const err = document.getElementById('loginErr');
+  err.style.display = 'none';
+  if(!name) { err.textContent = '⚠ Please select your name.'; err.style.display = 'block'; return; }
+  if(pin.length < 4) { err.textContent = '⚠ Please enter your full 4-digit PIN.'; err.style.display = 'block'; return; }
+  if(ADMINS[name] !== pin) {
+    err.textContent = '❌ Incorrect PIN. Please try again.'; err.style.display = 'block';
+    ['p1','p2','p3','p4'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('p1').focus(); return;
   }
-  currentAdmin=name;
-  document.getElementById('adminChip').textContent='👤 '+name;
+  currentAdmin = name;
+  const chip = document.getElementById('adminChip');
+  chip.textContent = '👤 ' + name;
+  chip.className = name === 'Tiffany' ? 'chip tiffany-chip' : 'chip';
   showView('dash');
 }
 
-function doLogout(){
-  currentAdmin=null;
-  ['p1','p2','p3','p4'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('adminSel').value='';
-  document.getElementById('loginErr').style.display='none';
+function doLogout() {
+  currentAdmin = null;
+  ['p1','p2','p3','p4'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('adminSel').value = '';
+  document.getElementById('loginErr').style.display = 'none';
   showView('form');
 }
 
-function handlePhotos(input){
-  photoFiles=Array.from(input.files).slice(0,5);
-  const prev=document.getElementById('previews');prev.innerHTML='';
-  photoFiles.forEach(f=>{const r=new FileReader();r.onload=e=>{const img=document.createElement('img');img.src=e.target.result;prev.appendChild(img);};r.readAsDataURL(f);});
+/* ═══════════════════════════════════════
+   TECH LOGIN / LOGOUT
+═══════════════════════════════════════ */
+function doTechLogin() {
+  const name = document.getElementById('techSel').value;
+  const pin = ['tp1','tp2','tp3','tp4'].map(id => document.getElementById(id).value).join('');
+  const err = document.getElementById('techLoginErr');
+  err.style.display = 'none';
+  if(!name) { err.textContent = '⚠ Please select your name.'; err.style.display = 'block'; return; }
+  if(pin.length < 4) { err.textContent = '⚠ Please enter your full 4-digit PIN.'; err.style.display = 'block'; return; }
+  if(TECHNICIANS[name] !== pin) {
+    err.textContent = '❌ Incorrect PIN. Please try again.'; err.style.display = 'block';
+    ['tp1','tp2','tp3','tp4'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('tp1').focus(); return;
+  }
+  currentTech = name;
+  document.getElementById('techWelcome').textContent = 'Hey, ' + name + ' 👷';
+  showView('tech');
 }
 
-async function uploadPhotos(files,ticketId){
-  const urls=[];
-  for(let i=0;i<files.length;i++){
-    const f=files[i],path=`${ticketId}/photo${i+1}_${f.name}`;
-    const{error}=await sb.storage.from('maintenance-photos').upload(path,f,{upsert:true});
-    if(!error){const{data:pub}=sb.storage.from('maintenance-photos').getPublicUrl(path);urls.push(pub.publicUrl);}
+function doTechLogout() {
+  currentTech = null;
+  ['tp1','tp2','tp3','tp4'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('techSel').value = '';
+  document.getElementById('techLoginErr').style.display = 'none';
+  showView('form');
+}
+
+/* ═══════════════════════════════════════
+   PHOTO HANDLING
+═══════════════════════════════════════ */
+function handlePhotos(input) {
+  photoFiles = Array.from(input.files).slice(0, 5);
+  const prev = document.getElementById('previews'); prev.innerHTML = '';
+  photoFiles.forEach(f => {
+    const r = new FileReader();
+    r.onload = e => { const img = document.createElement('img'); img.src = e.target.result; prev.appendChild(img); };
+    r.readAsDataURL(f);
+  });
+}
+
+async function uploadPhotos(files, ticketId) {
+  const urls = [];
+  for(let i = 0; i < files.length; i++) {
+    const f = files[i], path = `${ticketId}/photo${i+1}_${f.name}`;
+    const { error } = await sb.storage.from('maintenance-photos').upload(path, f, { upsert: true });
+    if(!error) { const { data: pub } = sb.storage.from('maintenance-photos').getPublicUrl(path); urls.push(pub.publicUrl); }
   }
   return urls;
 }
 
-async function submitRequest(){
-  const get=id=>document.getElementById(id).value.trim();
-  const name=get('f-name'),email=get('f-email'),cat=get('f-cat'),loc=get('f-loc'),title=get('f-title'),desc=get('f-desc');
-  const prio=document.querySelector('input[name="prio"]:checked')?.value;
-  if(!name||!email||!cat||!loc||!title||!desc||!prio){showToast('Please fill in all required fields.','err');return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showToast('Please enter a valid email address.','err');return;}
-  const btn=document.getElementById('submitBtn');
-  btn.disabled=true;btn.innerHTML='<span>Submitting…</span>';
+/* ═══════════════════════════════════════
+   SUBMIT REQUEST
+═══════════════════════════════════════ */
+async function submitRequest() {
+  const get = id => document.getElementById(id).value.trim();
+  const name = get('f-name'), email = get('f-email'), cat = get('f-cat'), loc = get('f-loc'), title = get('f-title'), desc = get('f-desc');
+  const prio = document.querySelector('input[name="prio"]:checked')?.value;
+  if(!name || !email || !cat || !loc || !title || !desc || !prio) { showToast('Please fill in all required fields.', 'err'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Please enter a valid email address.', 'err'); return; }
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.innerHTML = '<span>Submitting…</span>';
   showLoader('Submitting your request…');
-  try{
-    const ticketId='BR-'+Date.now().toString().slice(-6);
-    const photoUrls=photoFiles.length?await uploadPhotos(photoFiles,ticketId):[];
-    const{error}=await sb.from(TABLE).insert({
-      ticket_id:ticketId,timestamp:new Date().toISOString(),
-      name,email,phone:get('f-phone')||null,
-      category:cat,location:loc,title,description:desc,
-      priority:prio,original_priority:prio,priority_overridden:false,
-      status:'Open',photos:photoUrls
+  try {
+    const ticketId = 'BR-' + Date.now().toString().slice(-6);
+    const photoUrls = photoFiles.length ? await uploadPhotos(photoFiles, ticketId) : [];
+    const { error } = await sb.from(TABLE).insert({
+      ticket_id: ticketId, timestamp: new Date().toISOString(),
+      name, email, phone: get('f-phone') || null,
+      category: cat, location: loc, title, description: desc,
+      priority: prio, original_priority: prio, priority_overridden: false,
+      status: 'Open', photos: photoUrls,
+      tech_note_seen: true, tech_note: null
     });
     if(error) throw error;
-    emailjs.send(EJS_SERVICE_ID,EJS_TPL_NEW,{
-      ticket_id:ticketId,title,from_name:name,from_email:email,
-      category:cat,location:loc,priority:prio,description:desc
-    }).catch(e=>console.warn('Email:',e));
-    document.getElementById('ticketDisplay').textContent=ticketId;
-    document.getElementById('formBody').style.display='none';
-    document.getElementById('successScreen').style.display='block';
-  }catch(e){
-    showToast('Submission failed — '+(e.message||'please try again.'),'err');
+    emailjs.send(EJS_SERVICE_ID, EJS_TPL_NEW, {
+      ticket_id: ticketId, title, from_name: name, from_email: email,
+      category: cat, location: loc, priority: prio, description: desc
+    }).catch(e => console.warn('Email:', e));
+    document.getElementById('ticketDisplay').textContent = ticketId;
+    document.getElementById('formBody').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+  } catch(e) {
+    showToast('Submission failed — ' + (e.message || 'please try again.'), 'err');
     console.error(e);
-  }finally{
+  } finally {
     hideLoader();
-    btn.disabled=false;
-    btn.innerHTML='<span>Submit Maintenance Request</span><span style="font-size:18px;">→</span>';
+    btn.disabled = false;
+    btn.innerHTML = '<span>Submit Maintenance Request</span><span style="font-size:18px;">→</span>';
   }
 }
 
-function resetForm(){
-  ['f-name','f-email','f-phone','f-cat','f-loc','f-title','f-desc'].forEach(id=>document.getElementById(id).value='');
-  document.querySelectorAll('input[name="prio"]').forEach(r=>r.checked=false);
-  document.getElementById('previews').innerHTML='';photoFiles=[];
-  document.getElementById('formBody').style.display='block';
-  document.getElementById('successScreen').style.display='none';
+function resetForm() {
+  ['f-name','f-email','f-phone','f-cat','f-loc','f-title','f-desc'].forEach(id => document.getElementById(id).value = '');
+  document.querySelectorAll('input[name="prio"]').forEach(r => r.checked = false);
+  document.getElementById('previews').innerHTML = ''; photoFiles = [];
+  document.getElementById('formBody').style.display = 'block';
+  document.getElementById('successScreen').style.display = 'none';
 }
 
-async function loadReqs(){
+/* ═══════════════════════════════════════
+   LOAD & FILTER (ADMIN)
+═══════════════════════════════════════ */
+async function loadReqs() {
   showLoader('Fetching requests…');
-  try{
-    const{data,error}=await sb.from(TABLE).select('*').order('timestamp',{ascending:false});
+  try {
+    const { data, error } = await sb.from(TABLE).select('*').order('timestamp', { ascending: false });
     if(error) throw error;
-    allReqs=data||[];updateStats();filterReqs();
-    document.getElementById('dashSub').textContent=allReqs.length+' total requests · Updated '+new Date().toLocaleTimeString();
-  }catch(e){
-    document.getElementById('cardsList').innerHTML='<div class="empty"><div class="ei">⚠️</div><h3>Could not load requests</h3><p>'+e.message+'</p></div>';
-  }finally{hideLoader();}
+    allReqs = data || [];
+    updateStats(); filterReqs();
+    document.getElementById('dashSub').textContent = allReqs.length + ' total requests · Updated ' + new Date().toLocaleTimeString();
+  } catch(e) {
+    document.getElementById('cardsList').innerHTML = '<div class="empty"><div class="ei">⚠️</div><h3>Could not load requests</h3><p>' + e.message + '</p></div>';
+  } finally { hideLoader(); }
 }
 
-function updateStats(){
-  document.getElementById('sOpen').textContent=allReqs.filter(r=>r.status==='Open').length;
-  document.getElementById('sProg').textContent=allReqs.filter(r=>r.status==='In Progress').length;
-  document.getElementById('sHold').textContent=allReqs.filter(r=>r.status==='On Hold').length;
-  document.getElementById('sDone').textContent=allReqs.filter(r=>r.status==='Resolved').length;
+function updateStats() {
+  const newNotes = allReqs.filter(r => !r.tech_note_seen && r.tech_note).length;
+  document.getElementById('sOpen').textContent = allReqs.filter(r => r.status === 'Open').length;
+  document.getElementById('sProg').textContent = allReqs.filter(r => r.status === 'In Progress').length;
+  document.getElementById('sHold').textContent = allReqs.filter(r => r.status === 'On Hold').length;
+  document.getElementById('sDone').textContent = allReqs.filter(r => r.status === 'Resolved').length;
+  document.getElementById('sNotes').textContent = newNotes;
 }
 
-function filterReqs(){
-  const q=document.querySelector('.f-search').value.toLowerCase();
-  const st=document.getElementById('fStat').value;
-  const cat=document.getElementById('fCat').value;
-  const pr=document.getElementById('fPrio').value;
-  const prioOrd={Urgent:0,High:1,Medium:2,Low:3};
-  let list=allReqs.filter(r=>
-    (!q||[r.name,r.title,r.location,r.ticket_id].some(v=>(v||'').toLowerCase().includes(q)))&&
-    (!st||r.status===st)&&(!cat||r.category===cat)&&(!pr||r.priority===pr)
-  ).sort((a,b)=>(prioOrd[a.priority]??9)-(prioOrd[b.priority]??9));
+function filterReqs() {
+  const q = document.querySelector('.f-search').value.toLowerCase();
+  const st = document.getElementById('fStat').value;
+  const cat = document.getElementById('fCat').value;
+  const pr = document.getElementById('fPrio').value;
+  const techF = document.getElementById('fTech').value;
+  const prioOrd = { Urgent:0, High:1, Medium:2, Low:3 };
+  let list = allReqs.filter(r =>
+    (!q || [r.name, r.title, r.location, r.ticket_id].some(v => (v||'').toLowerCase().includes(q))) &&
+    (!st || r.status === st) && (!cat || r.category === cat) && (!pr || r.priority === pr) &&
+    (!techF || (techF === 'unassigned' ? !r.technician : r.technician === techF))
+  ).sort((a,b) => (prioOrd[a.priority] ?? 9) - (prioOrd[b.priority] ?? 9));
   renderReqs(list);
 }
 
+/* ═══════════════════════════════════════
+   RENDER ADMIN CARDS
+═══════════════════════════════════════ */
 function catClass(c){if(!c)return'b-ot';if(c.includes('IT'))return'b-it';if(c.includes('General'))return'b-gm';if(c.includes('Electrical'))return'b-el';if(c.includes('Plumbing'))return'b-pl';if(c.includes('HVAC'))return'b-hv';return'b-ot';}
-function statClass(s){return{Open:'s-open','In Progress':'s-prog','On Hold':'s-hold',Resolved:'s-done'}[s]||'s-open';}
+function statClass(s){return{'Open':'s-open','In Progress':'s-prog','On Hold':'s-hold','Resolved':'s-done','Pending Tiffany':'s-ptiff'}[s]||'s-open';}
 function prioClass(p){return{Low:'p-low',Medium:'p-med',High:'p-high',Urgent:'p-urg'}[p]||'p-low';}
 function prioEmoji(p){return{Low:'🟢',Medium:'🟡',High:'🟠',Urgent:'🔴'}[p]||'⚪';}
 function timeAgo(ts){if(!ts)return'';const m=Math.floor((Date.now()-new Date(ts))/60000);if(m<1)return'Just now';if(m<60)return m+'m ago';const h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
 
-function renderReqs(list){
-  const c=document.getElementById('cardsList');
-  if(!list.length){c.innerHTML='<div class="empty"><div class="ei">🎉</div><h3>No requests match your filters</h3></div>';return;}
-  c.innerHTML=list.map(r=>{
-    const photos=(r.photos||[]).map(u=>`<img src="${u}" onclick="lboxOpen('${u}')" alt="photo"/>`).join('');
-    const noteBox=r.admin_note?`<div class="admin-note-box"><strong>Admin Note:</strong> ${r.admin_note}</div>`:'';
-    const overrideNotif=r.priority_overridden&&r.override_message
-      ?`<div class="override-notif-box">✅ <strong>Priority adjusted by admin</strong> — Requester notified: "${r.override_message}"</div>`:'';
-    const overriddenBadge=r.priority_overridden?`<span class="badge b-ovr">✏️ Overridden</span>`:'';
-    const origNote=r.priority_overridden&&r.original_priority
-      ?`<div class="orig-prio-note" style="margin-top:4px;">Originally submitted as: <strong>${prioEmoji(r.original_priority)} ${r.original_priority}</strong></div>`:'';
-    const supFill=r.supervisor&&r.supervisor!=='';
-    const techFill=r.technician&&r.technician!=='';
-    const tid=r.ticket_id.replace(/[^a-zA-Z0-9]/g,'');
-    const opoBtn=(p,val)=>`<div class="opo ${p}"><input type="radio" name="oprio-${tid}" id="op${val[0]}${tid}" value="${val}" ${r.priority===val?'checked':''}/><label for="op${val[0]}${tid}"><span class="ico">${prioEmoji(val)}</span>${val}</label></div>`;
+function workflowHtml(r) {
+  const supFill = r.supervisor && r.supervisor !== '';
+  const techFill = r.technician && r.technician !== '';
+  const hasNote = r.tech_note && r.tech_note !== '';
+  const isPendingTiff = r.status === 'Pending Tiffany';
+  const isDone = r.status === 'Resolved';
+  const steps = [
+    { label: '📋 Submitted', filled: true },
+    { label: '👷 ' + (supFill ? r.supervisor : 'Supervisor'), filled: supFill },
+    { label: '🔧 ' + (techFill ? r.technician : 'Technician'), filled: techFill },
+    { label: '📝 Note Added', filled: hasNote },
+    { label: '⏳ Pending Tiffany', filled: isPendingTiff || isDone },
+    { label: '✅ Resolved', filled: isDone }
+  ];
+  return steps.map((s, i) =>
+    `<div class="wt-step ${s.filled ? 'filled' : ''}">${s.label}</div>${i < steps.length-1 ? '<div class="wt-arrow">→</div>' : ''}`
+  ).join('');
+}
 
-    return`<div class="req-card" id="rc-${r.ticket_id}">
+function renderReqs(list) {
+  const c = document.getElementById('cardsList');
+  if(!list.length) { c.innerHTML = '<div class="empty"><div class="ei">🎉</div><h3>No requests match your filters</h3></div>'; return; }
+  const isTiffany = currentAdmin === 'Tiffany';
+  c.innerHTML = list.map(r => {
+    const photos = (r.photos||[]).map(u => `<img src="${u}" onclick="lboxOpen('${u}')" alt="photo"/>`).join('');
+    const noteBox = r.admin_note ? `<div class="admin-note-box"><strong>Admin Note:</strong> ${r.admin_note}</div>` : '';
+    const overrideNotif = r.priority_overridden && r.override_message
+      ? `<div class="override-notif-box">✅ <strong>Priority adjusted by admin</strong> — Requester notified: "${r.override_message}"</div>` : '';
+    const overriddenBadge = r.priority_overridden ? `<span class="badge b-ovr">✏️ Overridden</span>` : '';
+    const origNote = r.priority_overridden && r.original_priority
+      ? `<div class="orig-prio-note" style="margin-top:4px;">Originally: <strong>${prioEmoji(r.original_priority)} ${r.original_priority}</strong></div>` : '';
+    const hasNewNote = !r.tech_note_seen && r.tech_note;
+    const newNoteBadge = hasNewNote ? `<span class="badge b-new-note">🔔 New Tech Note</span>` : '';
+    const techNoteSection = r.tech_note
+      ? `<div class="tech-note-banner">
+          <div class="tech-note-content">
+            <div class="tn-label">🔧 Tech Progress Note${hasNewNote ? ' — NEW' : ''}</div>
+            <div class="tn-text">${r.tech_note}</div>
+          </div>
+          ${hasNewNote ? `<button class="mark-read-btn" onclick="markNoteRead('${r.ticket_id}', event)">✓ Mark Note Read</button>` : ''}
+        </div>` : '';
+    const tid = r.ticket_id.replace(/[^a-zA-Z0-9]/g, '');
+    const opoBtn = (p, val) => `<div class="opo ${p}"><input type="radio" name="oprio-${tid}" id="op${val[0]}${tid}" value="${val}" ${r.priority===val?'checked':''}/><label for="op${val[0]}${tid}"><span class="ico">${prioEmoji(val)}</span>${val}</label></div>`;
+
+    /* Status buttons — Resolved is Tiffany-only */
+    const statuses = ['Open','In Progress','On Hold','Pending Tiffany','Resolved'];
+    const statusButtons = statuses.map(s => {
+      const isSelected = r.status === s;
+      const isTiffanyOnly = s === 'Resolved';
+      const locked = isTiffanyOnly && !isTiffany;
+      let cls = 'stat-opt-btn';
+      if(isSelected) cls += ' selected';
+      if(isTiffanyOnly) cls += ' tiffany-only';
+      if(locked) cls += ' locked';
+      const onclick = locked
+        ? `onclick="showToast('Only Tiffany can mark tickets Resolved.','err')"`
+        : `onclick="setTicketStatus('${r.ticket_id}', '${s}', this)"`;
+      return `<button class="${cls}" ${onclick} ${locked ? 'title="Only Tiffany can resolve tickets"' : ''}>${s}${isTiffanyOnly ? ' 🔒' : ''}</button>`;
+    }).join('');
+    const tiffLockNote = !isTiffany ? `<div class="tiffany-lock-note">🔒 "Resolved" can only be set by Tiffany</div>` : '';
+
+    const supVal = r.supervisor || '';
+    const techVal = r.technician || '';
+
+    return `<div class="req-card ${hasNewNote ? 'has-new-note' : ''}" id="rc-${r.ticket_id}">
       <div class="card-hdr" onclick="toggleCard('${r.ticket_id}')">
         <div class="card-left">
           <div class="c-id">${r.ticket_id||'—'}</div>
@@ -526,8 +771,9 @@ function renderReqs(list){
             <span class="badge ${prioClass(r.priority)}">${prioEmoji(r.priority)} ${r.priority||'—'}</span>
             ${overriddenBadge}
             <span class="badge ${statClass(r.status)}">${r.status||'Open'}</span>
-            ${supFill?`<span class="badge b-it">👷 ${r.supervisor}</span>`:''}
-            ${techFill?`<span class="badge" style="background:#FFF8E1;color:#C9A84C;">🔧 ${r.technician}</span>`:''}
+            ${supVal ? `<span class="badge b-it">👷 ${supVal}</span>` : ''}
+            ${techVal ? `<span class="badge" style="background:#FFF8E1;color:#C9A84C;">🔧 ${techVal}</span>` : ''}
+            ${newNoteBadge}
             <span style="font-size:11px;color:var(--stone)">📍 ${r.location||'—'}</span>
           </div>
           ${origNote}
@@ -542,14 +788,13 @@ function renderReqs(list){
           <div class="det"><div class="dl">Category</div><div class="dv">${r.category||'—'}</div></div>
         </div>
         <div class="c-desc">${r.description||'No description.'}</div>
-        ${photos?`<div class="c-photos">${photos}</div>`:''}
+        ${photos ? `<div class="c-photos">${photos}</div>` : ''}
+        ${techNoteSection}
         ${overrideNotif}
         ${noteBox}
-        <div class="workflow-trail">
-          <div class="wt-step filled">📋 Submitted</div><div class="wt-arrow">→</div>
-          <div class="wt-step ${supFill?'filled':''}">👷 ${supFill?r.supervisor:'Unassigned'}</div><div class="wt-arrow">→</div>
-          <div class="wt-step ${techFill?'filled':''}">🔧 ${techFill?r.technician:'Unassigned'}</div>
-        </div>
+        <div class="workflow-trail">${workflowHtml(r)}</div>
+
+        <!-- Priority Override -->
         <div class="override-section">
           <div class="as-title">✏️ Override Priority</div>
           <div class="override-prio-grid">
@@ -560,22 +805,37 @@ function renderReqs(list){
             <textarea id="omsg-${r.ticket_id}" placeholder="e.g. We've reviewed your request and adjusted the priority accordingly…">${r.override_message||''}</textarea>
           </div>
         </div>
+
+        <!-- Assignment -->
         <div class="assign-section">
           <div class="as-title">🗂 Assignment</div>
           <div class="assign-row">
-            <div class="assign-field"><label>Supervisor</label><input type="text" id="sup-${r.ticket_id}" placeholder="Supervisor name…" value="${r.supervisor||''}"/></div>
-            <div class="assign-field"><label>Technician</label><input type="text" id="tech-${r.ticket_id}" placeholder="Technician name…" value="${r.technician||''}"/></div>
+            <div class="assign-field">
+              <label>Supervisor</label>
+              <input type="text" id="sup-${r.ticket_id}" placeholder="Supervisor name…" value="${supVal}"/>
+            </div>
+            <div class="assign-field">
+              <label>Technician</label>
+              <select id="tech-${r.ticket_id}">
+                <option value="">— Unassigned —</option>
+                <option ${techVal==='Ethan'?'selected':''}>Ethan</option>
+                <option ${techVal==='Eric'?'selected':''}>Eric</option>
+                <option ${techVal==='Other'?'selected':''}>Other</option>
+              </select>
+            </div>
           </div>
         </div>
+
+        <!-- Status Buttons -->
+        <div style="margin-bottom:12px;">
+          <div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--navy);margin-bottom:8px;">Update Status</div>
+          <div class="status-actions">${statusButtons}</div>
+          ${tiffLockNote}
+        </div>
+
         <div class="actions">
-          <select class="act-sel" id="sel-${r.ticket_id}">
-            <option ${r.status==='Open'?'selected':''}>Open</option>
-            <option ${r.status==='In Progress'?'selected':''}>In Progress</option>
-            <option ${r.status==='On Hold'?'selected':''}>On Hold</option>
-            <option ${r.status==='Resolved'?'selected':''}>Resolved</option>
-          </select>
           <input class="note-in" id="note-${r.ticket_id}" type="text" placeholder="Add admin note…" value="${r.admin_note||''}"/>
-          <button class="upd-btn" onclick="updateReq('${r.ticket_id}')">Save</button>
+          <button class="upd-btn" onclick="updateReq('${r.ticket_id}')">Save Changes</button>
         </div>
         <div class="c-footer">Submitted ${new Date(r.timestamp).toLocaleString()}</div>
       </div>
@@ -583,65 +843,208 @@ function renderReqs(list){
   }).join('');
 }
 
-function toggleCard(id){document.getElementById('rc-'+id).classList.toggle('open-body');}
+function toggleCard(id) { document.getElementById('rc-' + id).classList.toggle('open-body'); }
 
-async function updateReq(ticketId){
-  const status=document.getElementById('sel-'+ticketId).value;
-  const note=document.getElementById('note-'+ticketId).value.trim();
-  const supervisor=document.getElementById('sup-'+ticketId).value.trim();
-  const technician=document.getElementById('tech-'+ticketId).value.trim();
-  const overrideMsg=document.getElementById('omsg-'+ticketId).value.trim();
-  const tid=ticketId.replace(/[^a-zA-Z0-9]/g,'');
-  const selectedPrio=document.querySelector(`input[name="oprio-${tid}"]:checked`)?.value;
-  const origReq=allReqs.find(r=>r.ticket_id===ticketId);
-  const origPrio=origReq?.original_priority||origReq?.priority;
-  const wasOverridden=!!(selectedPrio&&selectedPrio!==origPrio);
-
-  showLoader('Saving…');
-  try{
-    const payload={
-      status,admin_note:note,supervisor,technician,
-      updated_by:currentAdmin,updated_at:new Date().toISOString(),
-      override_message:overrideMsg||null
-    };
-    if(selectedPrio){
-      payload.priority=selectedPrio;
-      payload.priority_overridden=wasOverridden;
-    }
-    const{error}=await sb.from(TABLE).update(payload).eq('ticket_id',ticketId);
-    if(error) throw error;
-
-    if(origReq&&origReq.email){
-      const emailParams={
-        to_email:origReq.email,to_name:origReq.name,
-        ticket_id:ticketId,title:origReq.title,
-        status,admin_note:note||'No additional notes.'
-      };
-      if(wasOverridden&&overrideMsg){
-        emailParams.priority_note=`Your priority has been adjusted from ${origPrio} to ${selectedPrio}. Reason: ${overrideMsg}`;
-      }
-      emailjs.send(EJS_SERVICE_ID,EJS_TPL_UPDATE,emailParams).catch(e=>console.warn('Email:',e));
-    }
-
-    showToast(wasOverridden?'✅ Priority overridden & requester notified!':'✅ Request updated!','ok');
-    const idx=allReqs.findIndex(r=>r.ticket_id===ticketId);
-    if(idx>=0) Object.assign(allReqs[idx],{
-      status,admin_note:note,supervisor,technician,
-      priority:selectedPrio||allReqs[idx].priority,
-      priority_overridden:wasOverridden,
-      override_message:overrideMsg||null
-    });
-    updateStats();filterReqs();
-  }catch(e){
-    showToast('Update failed: '+e.message,'err');
-  }finally{hideLoader();}
+/* ═══════════════════════════════════════
+   SET STATUS (inline, before save)
+═══════════════════════════════════════ */
+function setTicketStatus(ticketId, status, btn) {
+  if(status === 'Resolved' && currentAdmin !== 'Tiffany') {
+    showToast('Only Tiffany can mark tickets as Resolved.', 'err'); return;
+  }
+  /* Update button UI inline */
+  const card = document.getElementById('rc-' + ticketId);
+  card.querySelectorAll('.stat-opt-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  /* Store temporarily so Save picks it up */
+  btn.closest('.status-actions').dataset.pendingStatus = status;
 }
 
-function lboxOpen(src){document.getElementById('lboxImg').src=src;document.getElementById('lbox').classList.add('on');}
-function lboxClose(){document.getElementById('lbox').classList.remove('on');}
-function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.className='toast',3800);}
-function showLoader(msg){document.getElementById('loaderMsg').textContent=msg;document.getElementById('loader').classList.add('on');}
-function hideLoader(){document.getElementById('loader').classList.remove('on');}
+/* ═══════════════════════════════════════
+   MARK TECH NOTE READ
+═══════════════════════════════════════ */
+async function markNoteRead(ticketId, e) {
+  if(e) e.stopPropagation();
+  showLoader('Marking note as read…');
+  try {
+    const { error } = await sb.from(TABLE).update({ tech_note_seen: true }).eq('ticket_id', ticketId);
+    if(error) throw error;
+    const idx = allReqs.findIndex(r => r.ticket_id === ticketId);
+    if(idx >= 0) allReqs[idx].tech_note_seen = true;
+    updateStats(); filterReqs();
+    showToast('Note marked as read.', 'ok');
+  } catch(e) {
+    showToast('Error: ' + e.message, 'err');
+  } finally { hideLoader(); }
+}
+
+/* ═══════════════════════════════════════
+   UPDATE REQUEST (ADMIN SAVE)
+═══════════════════════════════════════ */
+async function updateReq(ticketId) {
+  const note = document.getElementById('note-' + ticketId).value.trim();
+  const supervisor = document.getElementById('sup-' + ticketId).value.trim();
+  const technician = document.getElementById('tech-' + ticketId).value.trim();
+  const overrideMsg = document.getElementById('omsg-' + ticketId).value.trim();
+  const tid = ticketId.replace(/[^a-zA-Z0-9]/g, '');
+  const selectedPrio = document.querySelector(`input[name="oprio-${tid}"]:checked`)?.value;
+  const origReq = allReqs.find(r => r.ticket_id === ticketId);
+  const origPrio = origReq?.original_priority || origReq?.priority;
+  const wasOverridden = !!(selectedPrio && selectedPrio !== origPrio);
+
+  /* Get pending status from button UI */
+  const statusActions = document.querySelector(`#rc-${ticketId} .status-actions`);
+  const selectedBtn = statusActions?.querySelector('.stat-opt-btn.selected');
+  const status = selectedBtn?.textContent?.replace(' 🔒','').trim() || origReq?.status || 'Open';
+
+  if(status === 'Resolved' && currentAdmin !== 'Tiffany') {
+    showToast('Only Tiffany can mark tickets as Resolved.', 'err'); return;
+  }
+
+  showLoader('Saving…');
+  try {
+    const payload = {
+      status, admin_note: note, supervisor, technician,
+      updated_by: currentAdmin, updated_at: new Date().toISOString(),
+      override_message: overrideMsg || null
+    };
+    if(selectedPrio) {
+      payload.priority = selectedPrio;
+      payload.priority_overridden = wasOverridden;
+    }
+    const { error } = await sb.from(TABLE).update(payload).eq('ticket_id', ticketId);
+    if(error) throw error;
+
+    if(origReq && origReq.email) {
+      const emailParams = {
+        to_email: origReq.email, to_name: origReq.name,
+        ticket_id: ticketId, title: origReq.title,
+        status, admin_note: note || 'No additional notes.'
+      };
+      if(wasOverridden && overrideMsg) {
+        emailParams.priority_note = `Your priority has been adjusted from ${origPrio} to ${selectedPrio}. Reason: ${overrideMsg}`;
+      }
+      emailjs.send(EJS_SERVICE_ID, EJS_TPL_UPDATE, emailParams).catch(e => console.warn('Email:', e));
+    }
+
+    showToast(wasOverridden ? '✅ Priority overridden & requester notified!' : '✅ Request updated!', 'ok');
+    const idx = allReqs.findIndex(r => r.ticket_id === ticketId);
+    if(idx >= 0) Object.assign(allReqs[idx], {
+      status, admin_note: note, supervisor, technician,
+      priority: selectedPrio || allReqs[idx].priority,
+      priority_overridden: wasOverridden,
+      override_message: overrideMsg || null
+    });
+    updateStats(); filterReqs();
+  } catch(e) {
+    showToast('Update failed: ' + e.message, 'err');
+  } finally { hideLoader(); }
+}
+
+/* ═══════════════════════════════════════
+   TECH DASHBOARD
+═══════════════════════════════════════ */
+async function loadTechReqs() {
+  showLoader('Loading your tickets…');
+  try {
+    const { data, error } = await sb.from(TABLE)
+      .select('*')
+      .eq('technician', currentTech)
+      .order('timestamp', { ascending: false });
+    if(error) throw error;
+    renderTechCards(data || []);
+  } catch(e) {
+    document.getElementById('techCardsList').innerHTML = '<div class="empty"><div class="ei">⚠️</div><h3>Could not load tickets</h3><p>' + e.message + '</p></div>';
+  } finally { hideLoader(); }
+}
+
+function renderTechCards(list) {
+  const c = document.getElementById('techCardsList');
+  if(!list.length) {
+    c.innerHTML = '<div class="empty"><div class="ei">🎉</div><h3>No tickets assigned to you</h3><p>Check back later or contact your supervisor.</p></div>';
+    return;
+  }
+  c.innerHTML = list.map(r => {
+    const existingNote = r.tech_note
+      ? `<div class="existing-note-box"><div class="en-label">Your last note</div>${r.tech_note}</div>` : '';
+    return `<div class="tech-card" id="tc-${r.ticket_id}">
+      <div class="tech-card-hdr" onclick="toggleTechCard('${r.ticket_id}')">
+        <div class="card-left">
+          <div class="c-id">${r.ticket_id}</div>
+          <div class="c-title">${r.title}</div>
+          <div class="c-meta">
+            <span class="badge ${catClass(r.category)}">${r.category}</span>
+            <span class="badge ${prioClass(r.priority)}">${prioEmoji(r.priority)} ${r.priority}</span>
+            <span class="badge ${statClass(r.status)}">${r.status}</span>
+            <span style="font-size:11px;color:var(--stone)">📍 ${r.location||'—'}</span>
+          </div>
+        </div>
+        <div class="card-right"><span class="c-time">${timeAgo(r.timestamp)}</span><span class="expand-ico">▾</span></div>
+      </div>
+      <div class="tech-card-body">
+        <div class="detail-grid" style="margin-bottom:14px;">
+          <div class="det"><div class="dl">Location</div><div class="dv">${r.location||'—'}</div></div>
+          <div class="det"><div class="dl">Category</div><div class="dv">${r.category||'—'}</div></div>
+          <div class="det"><div class="dl">Submitted By</div><div class="dv">${r.name||'—'}</div></div>
+          <div class="det"><div class="dl">Phone</div><div class="dv">${r.phone||'—'}</div></div>
+        </div>
+        <div class="c-desc" style="margin-bottom:14px;">${r.description}</div>
+        ${existingNote}
+        <div class="tech-note-section">
+          <label>Add / Update Progress Note</label>
+          <textarea id="tnote-${r.ticket_id}" placeholder="Describe what you found, what you did, or what parts/follow-up are needed…">${r.tech_note||''}</textarea>
+          <button class="save-note-btn" onclick="saveTechNote('${r.ticket_id}')">💾 Save Note</button>
+        </div>
+        <div class="c-footer" style="margin-top:10px;">Submitted ${new Date(r.timestamp).toLocaleString()}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleTechCard(id) { document.getElementById('tc-' + id).classList.toggle('open-body'); }
+
+/* ═══════════════════════════════════════
+   TECH — SAVE NOTE
+═══════════════════════════════════════ */
+async function saveTechNote(ticketId) {
+  const note = document.getElementById('tnote-' + ticketId).value.trim();
+  if(!note) { showToast('Please write a note before saving.', 'err'); return; }
+  showLoader('Saving your note…');
+  try {
+    const { error } = await sb.from(TABLE).update({
+      tech_note: note,
+      tech_note_seen: false,
+      updated_at: new Date().toISOString()
+    }).eq('ticket_id', ticketId);
+    if(error) throw error;
+
+    /* Send email notification to all admins */
+    const { data: reqData } = await sb.from(TABLE).select('title,location,priority').eq('ticket_id', ticketId).single();
+    const adminEmails = Object.values(ADMIN_EMAILS).join(',');
+    emailjs.send(EJS_SERVICE_ID, EJS_TPL_UPDATE, {
+      to_email: adminEmails,
+      to_name: 'Admin Team',
+      ticket_id: ticketId,
+      title: reqData?.title || ticketId,
+      status: 'Tech Note Added',
+      admin_note: `📝 ${currentTech} added a progress note:\n\n"${note}"\n\nLocation: ${reqData?.location || '—'} | Priority: ${reqData?.priority || '—'}`
+    }).catch(e => console.warn('Email:', e));
+
+    showToast('✅ Note saved — admins have been notified!', 'ok');
+    loadTechReqs();
+  } catch(e) {
+    showToast('Save failed: ' + e.message, 'err');
+  } finally { hideLoader(); }
+}
+
+/* ═══════════════════════════════════════
+   LIGHTBOX / TOAST / LOADER
+═══════════════════════════════════════ */
+function lboxOpen(src) { document.getElementById('lboxImg').src = src; document.getElementById('lbox').classList.add('on'); }
+function lboxClose() { document.getElementById('lbox').classList.remove('on'); }
+function showToast(msg, type='') { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show ' + type; setTimeout(() => t.className = 'toast', 4200); }
+function showLoader(msg) { document.getElementById('loaderMsg').textContent = msg; document.getElementById('loader').classList.add('on'); }
+function hideLoader() { document.getElementById('loader').classList.remove('on'); }
 </script>
 </body>
 </html>
