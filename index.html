@@ -248,10 +248,18 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--warm);color:var(--c
 .empty .ei{font-size:44px;margin-bottom:14px;opacity:0.35;}
 .empty h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--charcoal);margin-bottom:6px;}
 
-/* ── LOCATION in tech card HEADER (always visible, big & bold) ── */
-.tech-hdr-location{font-size:15px;font-weight:800;color:#fff;background:var(--navy-dark);display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:9px;margin:7px 0 9px;box-shadow:0 2px 8px rgba(45,61,79,0.18);}
-.tech-hdr-location .loc-label{font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;opacity:0.55;border-right:1px solid rgba(255,255,255,0.25);padding-right:8px;margin-right:2px;}
-.tech-hdr-location .loc-val{font-size:15px;font-weight:800;line-height:1.2;}
+/* ── LOCATION BANNER in tech card header — full width, unmissable ── */
+.tech-hdr-location{
+  display:flex;align-items:center;gap:12px;
+  background:linear-gradient(130deg,var(--navy-dark) 0%,var(--navy-light) 100%);
+  border-radius:11px;padding:13px 18px;margin:8px 0 10px;
+  box-shadow:0 3px 12px rgba(45,61,79,0.22);
+  width:100%;box-sizing:border-box;
+}
+.tech-hdr-location .loc-icon{font-size:26px;flex-shrink:0;line-height:1;}
+.tech-hdr-location .loc-text{display:flex;flex-direction:column;gap:1px;}
+.tech-hdr-location .loc-label{font-size:9px;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.55);}
+.tech-hdr-location .loc-val{font-size:20px;font-weight:800;color:#fff;line-height:1.2;letter-spacing:-0.3px;}
 
 .lbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;align-items:center;justify-content:center;}
 .lbox.on{display:flex;}
@@ -1052,11 +1060,13 @@ function renderTechCards(list) {
         <div class="card-left">
           <div class="c-id">${r.ticket_id}</div>
           <div class="c-title">${r.title}</div>
-          <!-- Location always visible in header, big & bold -->
+          <!-- Location — full-width banner, always visible -->
           <div class="tech-hdr-location">
-            <span style="font-size:16px;">📍</span>
-            <span class="loc-label">Location</span>
-            <span class="loc-val">${r.location || '—'}</span>
+            <span class="loc-icon">📍</span>
+            <div class="loc-text">
+              <span class="loc-label">Location</span>
+              <span class="loc-val">${r.location || '—'}</span>
+            </div>
           </div>
           <div class="c-meta">
             <span class="badge ${catClass(r.category)}">${r.category}</span>
