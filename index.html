@@ -819,6 +819,7 @@ function renderReqs(list) {
         <div class="card-left">
           <div class="c-id">${r.ticket_id||'—'}</div>
           <div class="c-title">${r.title||'Untitled'}</div>
+          <div class="c-location-bar">📍 <strong>${r.location||'—'}</strong></div>
           <div class="c-meta">
             <span class="badge ${catClass(r.category)}">${r.category||'—'}</span>
             <span class="badge ${prioClass(r.priority)}">${prioEmoji(r.priority)} ${r.priority||'—'}</span>
@@ -828,7 +829,6 @@ function renderReqs(list) {
             ${techVal ? `<span class="badge" style="background:#FFF8E1;color:#C9A84C;">🔧 ${techVal}</span>` : ''}
             ${newNoteBadge}
             ${techDoneFlag}
-            <span style="font-size:11px;color:var(--stone)">📍 ${r.location||'—'}</span>
           </div>
           ${origNote}
         </div>
