@@ -2506,3 +2506,56 @@ body{
   .ref-card-intro h1{font-size:34px}
   .ref-card-intro p{max-width:235px}
 }
+
+
+/* V2.6 header simplification: text only, no logos */
+.ref-desktop-header{
+  padding:8px 42px 0;
+}
+.ref-header-brand{
+  color:#17345b;
+  font-family:'Bellefair',serif;
+  font-size:28px;
+  line-height:1;
+  letter-spacing:-.5px;
+}
+.ref-header-secure{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#4b6280;
+  font-size:10px;
+}
+.required-mark{
+  color:#d9534f;
+  font-weight:700;
+  margin-left:2px;
+}
+.ref-mobile-header{
+  min-height:78px;
+  grid-template-columns:1fr auto;
+  gap:12px;
+}
+.ref-mobile-brand{
+  color:#17345b;
+  font-family:'Bellefair',serif;
+  font-size:22px;
+  line-height:1.04;
+}
+.ref-mobile-secure{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  color:#61758c;
+  font-size:8px;
+}
+@media(max-width:760px){
+  .ref-mobile-header{
+    display:grid;
+  }
+}
+@media(max-width:390px){
+  .ref-mobile-brand{
+    font-size:20px;
+  }
+}
