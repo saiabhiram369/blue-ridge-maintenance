@@ -1,6 +1,6 @@
 import {
-  BarChart3, Building2, CalendarDays, ClipboardList, LayoutDashboard,
-  LogOut, Menu, Mountain, Users, X
+  BarChart3, Building2, ClipboardList, FileText, LayoutDashboard,
+  LogOut, Menu, Mountain, Settings, Users, X
 } from 'lucide-react';
 import type { Profile } from '../types';
 
@@ -14,10 +14,11 @@ interface Props {
 const nav = [
   [LayoutDashboard, 'Dashboard'],
   [ClipboardList, 'Work Orders'],
-  [Building2, 'Properties'],
   [Users, 'Technicians'],
-  [CalendarDays, 'Calendar'],
-  [BarChart3, 'Analytics']
+  [Building2, 'Facilities'],
+  [BarChart3, 'Analytics'],
+  [FileText, 'Reports'],
+  [Settings, 'Settings']
 ] as const;
 
 export function Sidebar({ profile, mobileOpen, onToggle, onLogout }: Props) {
@@ -41,7 +42,7 @@ export function Sidebar({ profile, mobileOpen, onToggle, onLogout }: Props) {
             <button
               key={label}
               className={index === 0 ? 'active' : ''}
-              title={index ? 'Coming in V2' : label}
+              title={index ? 'Coming soon' : label}
             >
               <Icon size={18} strokeWidth={1.7} />
               <span>{label}</span>
@@ -49,27 +50,15 @@ export function Sidebar({ profile, mobileOpen, onToggle, onLogout }: Props) {
           ))}
         </nav>
 
-        <div className="admin-team-card">
-          <div className="admin-team-head">
-            <span>Team capacity</span>
-            <small>This week</small>
-          </div>
-          <div className="admin-team-value">
-            <strong>72%</strong>
-            <span>utilized</span>
-          </div>
-          <div className="admin-capacity-bar"><i /></div>
-          <div className="admin-capacity-meta">
-            <span>Available 20%</span>
-            <span>Offline 8%</span>
-          </div>
+        <div className="admin-sidebar-mountain" aria-hidden="true">
+          <span/><span/><span/>
         </div>
 
         <div className="sidebar-user admin-sidebar-user">
-          <div className="avatar avatar-fallback">{profile?.full_name?.slice(0, 1) || 'B'}</div>
+          <div className="avatar avatar-fallback">{profile?.full_name?.slice(0, 1) || 'T'}</div>
           <div className="sidebar-user-copy">
-            <strong>{profile?.full_name || 'Operations'}</strong>
-            <small>{profile?.role === 'technician' ? 'Technician' : 'Operations Manager'}</small>
+            <strong>{profile?.full_name || 'Tiffany Walsh'}</strong>
+            <small>{profile?.role === 'technician' ? 'Technician' : 'Admin'}</small>
           </div>
           <button onClick={onLogout} title="Sign out"><LogOut size={17} /></button>
         </div>
