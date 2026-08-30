@@ -1,48 +1,35 @@
-import { LockKeyhole, Mountain, ShieldCheck } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import type { Profile } from '../types';
+import { LockKeyhole, Mail, Mountain, ShieldCheck } from 'lucide-react';
+import { useState } from 'react';
+import { supabase } from '../lib/supabase';
 
-interface Props { onAuthenticated: () => void; }
-
-const admins = {
-  Abhiram: { pin:'8118', email:'abhiram@artoflivingretreat.org' },
-  Tiffany: { pin:'1914', email:'tiffany@artoflivingretreat.org' },
-  Catherine: { pin:'8799', email:'catherine@artoflivingretreat.org' },
-  Corey: { pin:'2004', email:'corey@artoflivingretreat.org' }
-} as const;
-
-const technicians = {
-  Ethan: { pin:'1234', email:'ethan@blueridge.local' },
-  Eric: { pin:'5678', email:'eric@blueridge.local' }
-} as const;
+interface Props {
+  onAuthenticated: () => void;
+}
 
 export function LoginScreen({ onAuthenticated }: Props) {
   const isTech = window.location.pathname.toLowerCase().startsWith('/tech');
-  const users = useMemo(() => isTech ? technicians : admins, [isTech]);
-  const names = Object.keys(users);
-  const [name, setName] = useState(names[0] || '');
-  const [pin, setPin] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
+    setBusy(true);
     setError('');
 
-    const record = users[name as keyof typeof users] as { pin:string; email:string } | undefined;
-    if (!record || record.pin !== pin) {
-      setError('Incorrect name or PIN.');
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password
+    });
+
+    setBusy(false);
+
+    if (authError) {
+      setError(authError.message);
       return;
     }
 
-    const profile: Profile = {
-      id: `legacy-${name.toLowerCase()}`,
-      email: record.email,
-      full_name: isTech ? name : `${name} Walsh`.replace('Abhiram Walsh','Abhiram').replace('Catherine Walsh','Catherine').replace('Corey Walsh','Corey'),
-      role: isTech ? 'technician' : 'admin',
-      can_resolve: !isTech && name === 'Tiffany'
-    };
-
-    localStorage.setItem('br_legacy_profile', JSON.stringify(profile));
     onAuthenticated();
   }
 
@@ -56,36 +43,42 @@ export function LoginScreen({ onAuthenticated }: Props) {
 
         <div className="auth-icon"><LockKeyhole size={24}/></div>
         <h1>{isTech ? 'Technician access' : 'Admin access'}</h1>
-        <p>Use your existing Blue Ridge name and PIN.</p>
+        <p>Sign in with your authorized facilities account.</p>
 
         <form onSubmit={submit}>
           <label>
-            Name
-            <select value={name} onChange={e => setName(e.target.value)}>
-              {names.map(item => <option key={item}>{item}</option>)}
-            </select>
+            Email
+            <div className="auth-input-with-icon">
+              <Mail size={15}/>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                placeholder="name@artoflivingretreat.org"
+              />
+            </div>
           </label>
 
           <label>
-            4-digit PIN
+            Password
             <input
               type="password"
-              inputMode="numeric"
-              maxLength={4}
-              value={pin}
-              onChange={e => setPin(e.target.value.replace(/\D/g,'').slice(0,4))}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
               required
               autoComplete="current-password"
             />
           </label>
 
           {error && <div className="auth-error">{error}</div>}
-          <button>Enter Operations</button>
+          <button disabled={busy}>{busy ? 'Signing in…' : 'Enter Operations'}</button>
         </form>
 
         <div className="auth-security">
           <ShieldCheck size={15}/>
-          Authorized facilities staff only
+          Supabase Auth + role-based database access
         </div>
       </section>
     </main>
