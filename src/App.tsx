@@ -3,10 +3,12 @@ import {
   Search, SlidersHorizontal, Timer
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AdminInsights } from './components/AdminInsights';
 import { KpiCard } from './components/KpiCard';
 import { LoginScreen } from './components/LoginScreen';
 import { PublicRequest } from './components/PublicRequest';
 import { Sidebar } from './components/Sidebar';
+import { TechnicianHero } from './components/TechnicianHero';
 import { WorkOrderInspector } from './components/WorkOrderInspector';
 import { WorkOrderQueue } from './components/WorkOrderQueue';
 import { demoOrders } from './data/demo';
@@ -362,12 +364,20 @@ function OperationsApp() {
           </div>
         </header>
 
+        {isTechnician && (
+          <TechnicianHero technician={firstName} orders={orders} />
+        )}
+
         <section className="kpi-grid admin-kpi-grid">
           <KpiCard label="OPEN" value={counts.open} helper={isTechnician ? 'Assigned to you' : 'Needs triage'} icon={ClipboardCheck} tone="blue"/>
           <KpiCard label="IN PROGRESS" value={counts.progress} helper={isTechnician ? 'Work underway' : 'Actively being worked'} icon={RefreshCw} tone="amber"/>
           <KpiCard label="PENDING TIFFANY" value={counts.pending} helper={isTechnician ? 'Awaiting verification' : 'Needs final approval'} icon={Timer} tone="gold"/>
           <KpiCard label="COMPLETED" value={counts.complete} helper={isTechnician ? 'Verified and closed' : 'Resolved work orders'} icon={CheckCircle2} tone="green"/>
         </section>
+
+        {isAdmin && (
+          <AdminInsights orders={orders} />
+        )}
 
         {isTechnician && (
           <div className="tech-permission-banner">
