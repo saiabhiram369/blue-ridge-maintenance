@@ -2,9 +2,14 @@ import {
   Camera, CheckCircle2, ChevronRight, ClipboardList, Mail, MapPin, Mountain,
   Phone, ShieldCheck, Sparkles, UserRound
 } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import { useState } from 'react';
 import { demoMode, supabase } from '../lib/supabase';
 import type { Priority } from '../types';
+
+const EJS_PUBLIC_KEY = 'ATOjvujTTzM_lQ2DZ';
+const EJS_SERVICE_ID = 'service_rz1xa06';
+const EJS_TPL_NEW = 'template_sld7lxw';
 
 const categories = ['IT / Technology','General Maintenance','Electrical','Plumbing','HVAC / Climate','Carpentry / Structural','Grounds / Landscaping','Cleaning / Sanitation','Other'];
 const priorities: Priority[] = ['Low','Medium','High','Urgent'];
@@ -41,6 +46,22 @@ export function PublicRequest(){
           priority_overridden:false,status:'Open',photos:photoUrls,tech_note_seen:true,tech_marked_done:false
         });
         if(insertError) throw insertError;
+
+        emailjs.send(
+          EJS_SERVICE_ID,
+          EJS_TPL_NEW,
+          {
+            ticket_id: ticketId,
+            title: form.title,
+            from_name: form.name,
+            from_email: form.email,
+            category: form.category,
+            location: form.location,
+            priority: form.priority,
+            description: form.description
+          },
+          { publicKey: EJS_PUBLIC_KEY }
+        ).catch(err => console.warn('Email notification failed:', err));
       }
       setTicket(ticketId);
     }catch(err){setError(err instanceof Error?err.message:'Unable to submit request.')}
