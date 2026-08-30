@@ -2698,3 +2698,257 @@ body{
     font-size:14px;
   }
 }
+
+
+/* V2.8 — larger final reference scale */
+@media(min-width:761px){
+  .ref-page{
+    padding-bottom:22px;
+  }
+  .ref-desktop-header{
+    min-height:92px;
+    padding:4px 44px 0;
+  }
+  .ref-header-brand{
+    gap:13px;
+  }
+  .ref-header-brand svg{
+    width:40px;
+    height:40px;
+  }
+  .ref-header-brand strong{
+    font-size:24px;
+    letter-spacing:-.55px;
+  }
+  .ref-header-secure{
+    font-size:13px;
+  }
+
+  .ref-card{
+    width:min(1120px,calc(100vw - 96px));
+    margin-top:0;
+    padding:30px 36px 24px;
+    border-radius:26px;
+  }
+  .ref-card-intro{
+    padding-bottom:24px;
+  }
+  .ref-kicker{
+    font-size:12px;
+    letter-spacing:2px;
+    margin-bottom:9px;
+  }
+  .ref-card-intro h1{
+    font-size:60px;
+    letter-spacing:-1.5px;
+  }
+  .ref-card-intro p{
+    max-width:700px;
+    margin-top:8px;
+    font-size:14px;
+    line-height:1.5;
+  }
+  .ref-step{
+    width:64px;
+    height:64px;
+    border-radius:16px;
+  }
+  .ref-step strong{
+    font-size:18px;
+  }
+  .ref-step small{
+    font-size:9px;
+  }
+
+  .ref-section{
+    padding-top:21px;
+  }
+  .ref-section-title{
+    gap:11px;
+    margin-bottom:16px;
+  }
+  .ref-section-title>span{
+    width:34px;
+    height:34px;
+    border-radius:10px;
+  }
+  .ref-section-title>span svg{
+    width:20px;
+    height:20px;
+  }
+  .ref-section-title>strong{
+    font-size:12px;
+    letter-spacing:1.55px;
+  }
+
+  .ref-grid{
+    gap:14px;
+  }
+  .ref-card label{
+    gap:7px;
+    margin-bottom:12px;
+    font-size:12px;
+  }
+  .ref-card label>small{
+    font-size:10px;
+  }
+  .required-mark{
+    font-size:12px;
+  }
+  .ref-card input,
+  .ref-card select{
+    height:48px;
+    padding:0 14px;
+    font-size:14px;
+    border-radius:10px;
+  }
+  .ref-card textarea{
+    min-height:78px;
+    padding:12px 14px;
+    font-size:14px;
+    border-radius:10px;
+  }
+  .ref-field svg{
+    width:18px;
+    height:18px;
+    left:13px;
+  }
+  .ref-field input{
+    padding-left:42px;
+  }
+
+  .ref-bottom-grid{
+    grid-template-columns:1fr 245px;
+    gap:14px;
+  }
+  .ref-priority legend{
+    font-size:12px;
+    margin-bottom:8px;
+  }
+  .ref-priority>div{
+    gap:9px;
+  }
+  .ref-priority button{
+    height:60px;
+    border-radius:11px;
+  }
+  .ref-priority button>span{
+    font-size:12px;
+  }
+  .ref-priority button small{
+    font-size:9px;
+  }
+  .ref-upload{
+    min-height:68px;
+    border-radius:11px;
+  }
+  .ref-upload svg{
+    width:22px;
+    height:22px;
+  }
+  .ref-upload strong{
+    font-size:12px;
+  }
+  .ref-upload small{
+    font-size:9px!important;
+  }
+
+  .ref-routing{
+    min-height:55px;
+    margin-top:13px;
+    padding:10px 12px;
+    border-radius:11px;
+  }
+  .ref-routing>div{
+    width:34px;
+    height:34px;
+  }
+  .ref-routing small{
+    font-size:8px;
+  }
+  .ref-routing strong{
+    font-size:10px;
+  }
+  .ref-routing em{
+    font-size:9px;
+    padding:6px 10px;
+  }
+
+  .ref-submit{
+    height:54px;
+    margin-top:11px;
+    padding-left:19px;
+    font-size:14px;
+    border-radius:11px;
+  }
+  .ref-privacy{
+    margin-top:10px;
+    font-size:9px;
+  }
+  .ref-mountains{
+    height:62vh;
+    min-height:470px;
+  }
+}
+
+/* phone scale: readable but compact */
+@media(max-width:760px){
+  .ref-mobile-header{
+    min-height:80px;
+  }
+  .ref-mobile-brand strong{
+    font-size:17px;
+  }
+  .ref-mobile-secure{
+    font-size:9px;
+  }
+  .ref-card-intro h1{
+    font-size:42px;
+  }
+  .ref-card-intro p{
+    font-size:12px;
+  }
+  .ref-kicker{
+    font-size:9px;
+  }
+  .ref-section-title>strong{
+    font-size:11px;
+  }
+  .ref-card label{
+    font-size:12px;
+  }
+  .ref-card input,
+  .ref-card select{
+    height:50px;
+    font-size:16px;
+  }
+  .ref-card textarea{
+    min-height:100px;
+    font-size:16px;
+  }
+  .ref-priority legend{
+    font-size:12px;
+  }
+  .ref-priority button>span{
+    font-size:11px;
+  }
+  .ref-priority button small{
+    font-size:9px;
+  }
+  .ref-upload strong{
+    font-size:11px;
+  }
+  .ref-upload small{
+    font-size:9px!important;
+  }
+  .ref-routing strong{
+    font-size:9px;
+  }
+  .ref-submit{
+    height:54px;
+    font-size:13px;
+  }
+  .ref-privacy{
+    font-size:8px;
+  }
+}
