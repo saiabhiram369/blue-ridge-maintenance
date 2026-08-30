@@ -1,4 +1,7 @@
-import { Bell, CalendarDays, ClipboardCheck, RefreshCw, Search, SlidersHorizontal, Timer, Wrench } from 'lucide-react';
+import {
+  Bell, CalendarDays, CheckCircle2, ClipboardCheck, RefreshCw,
+  Search, SlidersHorizontal, Timer, Wrench
+} from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { KpiCard } from './components/KpiCard';
 import { LoginScreen } from './components/LoginScreen';
@@ -17,7 +20,9 @@ function OperationsApp() {
   const [authReady, setAuthReady] = useState(demoMode);
   const [authenticated, setAuthenticated] = useState(demoMode);
   const [profile, setProfile] = useState<Profile | null>(
-    demoMode ? { id:'demo', email:'demo@blueridge.local', full_name:'Bianca Roberts', role:'admin', can_resolve:true } : null
+    demoMode
+      ? { id:'demo', email:'tiffany@blueridge.local', full_name:'Tiffany Walsh', role:'admin', can_resolve:true }
+      : null
   );
   const [orders, setOrders] = useState<WorkOrder[]>([]);
   const [selected, setSelected] = useState<WorkOrder | null>(null);
@@ -51,6 +56,7 @@ function OperationsApp() {
 
   useEffect(() => {
     if (demoMode || !supabase) return;
+
     supabase.auth.getSession().then(({ data }) => {
       setAuthenticated(!!data.session);
       setAuthReady(true);
@@ -63,14 +69,17 @@ function OperationsApp() {
       if (session) hydrateProfile();
       else setProfile(null);
     });
+
     return () => listener.subscription.unsubscribe();
   }, [hydrateProfile]);
 
   const loadOrders = useCallback(async () => {
     setBusy(true);
     setNotice('');
+
     try {
       let next: WorkOrder[];
+
       if (demoMode || !supabase) {
         next = demoOrders;
       } else {
@@ -78,6 +87,7 @@ function OperationsApp() {
           .from('maintenance_requests')
           .select('*')
           .order('timestamp', { ascending:false });
+
         if (error) throw error;
         next = (data || []) as WorkOrder[];
       }
@@ -100,9 +110,10 @@ function OperationsApp() {
   }, [authenticated, profile, loadOrders]);
 
   const filtered = useMemo(() => orders.filter(order => {
-    const haystack = [order.ticket_id,order.title,order.location,order.name,order.technician]
-      .join(' ')
-      .toLowerCase();
+    const haystack = [
+      order.ticket_id, order.title, order.location, order.name, order.technician
+    ].join(' ').toLowerCase();
+
     return (!search || haystack.includes(search.toLowerCase()))
       && (!status || order.status === status)
       && (!priority || order.priority === priority);
@@ -117,11 +128,14 @@ function OperationsApp() {
 
   async function patchSelected(patch: Partial<WorkOrder>) {
     if (!selected) return;
+
     const before = selected;
     const updated = { ...selected, ...patch, updated_at:new Date().toISOString() };
 
     setSelected(updated);
-    setOrders(list => list.map(order => order.ticket_id === updated.ticket_id ? updated : order));
+    setOrders(list => list.map(order =>
+      order.ticket_id === updated.ticket_id ? updated : order
+    ));
 
     if (!demoMode && supabase) {
       const { error } = await supabase
@@ -132,9 +146,18 @@ function OperationsApp() {
       if (error) {
         setNotice(error.message);
         setSelected(before);
-        setOrders(list => list.map(order => order.ticket_id === before.ticket_id ? before : order));
+        setOrders(list => list.map(order =>
+          order.ticket_id === before.ticket_id ? before : order
+        ));
       }
     }
+  }
+
+  function addInternalNote() {
+    if (!selected) return;
+    const note = window.prompt('Add internal note', selected.admin_note || '');
+    if (note === null) return;
+    patchSelected({ admin_note: note.trim() || null });
   }
 
   async function logout() {
@@ -143,16 +166,29 @@ function OperationsApp() {
   }
 
   if (!authReady) {
-    return <div className="boot-screen"><div className="boot-orb"/><span>Preparing operations workspace…</span></div>;
+    return (
+      <div className="boot-screen">
+        <div className="boot-orb"/>
+        <span>Preparing operations workspace…</span>
+      </div>
+    );
   }
-  if (!authenticated) return <LoginScreen onAuthenticated={() => setAuthenticated(true)} />;
+
+  if (!authenticated) {
+    return <LoginScreen onAuthenticated={() => setAuthenticated(true)} />;
+  }
 
   const isAdmin = profile?.role === 'admin';
   const canResolve = !!profile?.can_resolve;
+  const firstName = profile?.full_name?.split(' ')[0] || 'Team';
+  const greeting = new Date().getHours() < 12
+    ? 'Good morning'
+    : new Date().getHours() < 18
+      ? 'Good afternoon'
+      : 'Good evening';
 
   return (
     <div className="app-shell">
-      <div className="ambient ambient-a"/><div className="ambient ambient-b"/><div className="ambient ambient-c"/>
       <Sidebar
         profile={profile}
         mobileOpen={mobileOpen}
@@ -160,70 +196,112 @@ function OperationsApp() {
         onLogout={logout}
       />
 
-      <main className="workspace">
-        <header className="topbar">
-          <div className="searchbox glass">
-            <Search size={18}/>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search work orders, locations, or technicians…"/>
-            <kbd>⌘ K</kbd>
+      <main className="workspace admin-workspace">
+        <header className="admin-dashboard-header">
+          <div>
+            <h1>{greeting}, {firstName}</h1>
+            <p>Facilities Operations</p>
           </div>
-          <div className="top-filters">
-            <label className="filter glass">
-              <SlidersHorizontal size={15}/>
-              <select value={status} onChange={e => setStatus(e.target.value)}>
-                <option value="">All statuses</option>
-                <option>Open</option><option>In Progress</option><option>On Hold</option>
-                <option>Pending Tiffany</option><option>Resolved</option>
-              </select>
-            </label>
-            <label className="filter glass">
-              <select value={priority} onChange={e => setPriority(e.target.value)}>
-                <option value="">All priorities</option>
-                <option>Urgent</option><option>High</option><option>Medium</option><option>Low</option>
-              </select>
-            </label>
-          </div>
-          <div className="top-actions">
-            <div className="date-chip glass">
-              <CalendarDays size={15}/>
-              {new Date().toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}
-            </div>
-            <button className="icon-btn glass" aria-label="Notifications"><Bell size={17}/><i/></button>
-            <button className="icon-btn glass" onClick={loadOrders} title="Refresh">
-              <RefreshCw className={busy ? 'spinning' : ''} size={17}/>
+
+          <div className="admin-header-actions">
+            <button className="admin-header-icon" aria-label="Notifications">
+              <Bell size={19}/>
+              <i/>
             </button>
+            <div className="admin-user-chip">
+              <span>{profile?.full_name?.split(' ').map(v => v[0]).slice(0,2).join('') || 'TW'}</span>
+            </div>
           </div>
         </header>
 
-        <section className="page-heading admin-page-heading">
-          <div>
-            <span className="eyebrow">BLUE RIDGE PRESERVATION MAINTENANCE</span>
-            <h1>Facilities Operations</h1>
-            <p>Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {profile?.full_name?.split(' ')[0] || 'team'}. Prioritize requests, assign technicians, and move work to resolution.</p>
-          </div>
-          <div className="live-chip"><i/> Live operations</div>
+        <section className="kpi-grid admin-kpi-grid">
+          <KpiCard
+            label="OPEN"
+            value={counts.open}
+            helper="+4 today"
+            icon={ClipboardCheck}
+            tone="blue"
+          />
+          <KpiCard
+            label="IN PROGRESS"
+            value={counts.progress}
+            helper="+2 today"
+            icon={RefreshCw}
+            tone="amber"
+          />
+          <KpiCard
+            label="PENDING APPROVAL"
+            value={counts.pending}
+            helper="+1 today"
+            icon={Timer}
+            tone="gold"
+          />
+          <KpiCard
+            label="COMPLETED"
+            value={counts.complete}
+            helper="+12 today"
+            icon={CheckCircle2}
+            tone="green"
+          />
         </section>
 
-        <section className="kpi-grid">
-          <KpiCard label="OPEN ORDERS" value={counts.open} helper="Needs triage or assignment" icon={ClipboardCheck} tone="gold"/>
-          <KpiCard label="IN PROGRESS" value={counts.progress} helper="Actively being worked" icon={Timer} tone="blue"/>
-          <KpiCard label="PENDING APPROVAL" value={counts.pending} helper="Ready for verification" icon={Wrench} tone="amber"/>
-          <KpiCard label="COMPLETED" value={counts.complete} helper="Resolved work orders" icon={ClipboardCheck} tone="green"/>
+        <section className="admin-filterbar">
+          <div className="searchbox">
+            <Search size={18}/>
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search work orders..."
+            />
+          </div>
+
+          <label className="filter">
+            <SlidersHorizontal size={15}/>
+            <select value={status} onChange={e => setStatus(e.target.value)}>
+              <option value="">Status: All</option>
+              <option>Open</option>
+              <option>In Progress</option>
+              <option>On Hold</option>
+              <option>Pending Tiffany</option>
+              <option>Resolved</option>
+            </select>
+          </label>
+
+          <label className="filter">
+            <select value={priority} onChange={e => setPriority(e.target.value)}>
+              <option value="">Priority: All</option>
+              <option>Urgent</option>
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
+          </label>
+
+          <div className="date-chip">
+            <CalendarDays size={16}/>
+            {new Date().toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}
+          </div>
+
+          <button className="admin-refresh-button" onClick={loadOrders} title="Refresh">
+            <RefreshCw className={busy ? 'spinning' : ''} size={17}/>
+          </button>
         </section>
 
         {notice && <div className="system-notice">{notice}</div>}
 
-        <section className="operations-grid">
+        <section className="operations-grid admin-operations-grid">
           <WorkOrderQueue
             orders={filtered}
             selectedId={selected?.ticket_id}
             onSelect={setSelected}
           />
+
           <WorkOrderInspector
             order={selected}
             onClose={() => setSelected(null)}
             onStatusChange={(next: WorkOrderStatus) => patchSelected({ status: next })}
             onTechnicianChange={(technician: string) => patchSelected({ technician: technician || null })}
+            onAddInternalNote={addInternalNote}
             isAdmin={isAdmin}
             canResolve={canResolve}
           />
