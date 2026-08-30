@@ -18,8 +18,12 @@ export function WorkOrderInspector({
   order, onClose, onStatusChange, onTechnicianChange, isAdmin, canResolve
 }: Props) {
   if (!order) return (
-    <aside className="inspector glass inspector-empty">
-      <div><span className="empty-orb" /><h3>Select a work order</h3><p>Details, assignment, notes and status history will appear here.</p></div>
+    <aside className="inspector admin-inspector inspector-empty">
+      <div>
+        <span className="empty-orb" />
+        <h3>Select a work order</h3>
+        <p>Details, assignment, notes and progress will appear here.</p>
+      </div>
     </aside>
   );
 
@@ -28,14 +32,14 @@ export function WorkOrderInspector({
     : Array.from(new Set<WorkOrderStatus>([order.status, 'Pending Tiffany']));
 
   const timeline = [
-    ['Order Created', true, new Date(order.timestamp).toLocaleString()],
-    ['In Progress', ['In Progress','Pending Tiffany','Resolved'].includes(order.status), order.technician || 'Awaiting assignment'],
-    ['Pending Approval', ['Pending Tiffany','Resolved'].includes(order.status), order.tech_marked_done ? 'Technician marked complete' : 'Awaiting completion'],
+    ['Order created', true, new Date(order.timestamp).toLocaleString()],
+    ['In progress', ['In Progress','Pending Tiffany','Resolved'].includes(order.status), order.technician || 'Awaiting assignment'],
+    ['Pending approval', ['Pending Tiffany','Resolved'].includes(order.status), order.tech_marked_done ? 'Technician marked complete' : 'Awaiting completion'],
     ['Resolved', order.status === 'Resolved', order.status === 'Resolved' ? 'Closed by operations' : 'Pending']
   ] as const;
 
   return (
-    <aside className="inspector glass">
+    <aside className="inspector admin-inspector">
       <div className="inspector-top">
         <div><small>WORK ORDER</small><strong>{order.ticket_id}</strong></div>
         <button onClick={onClose}><X size={18} /></button>
@@ -49,12 +53,26 @@ export function WorkOrderInspector({
       <h2>{order.title}</h2>
       <p className="inspector-location"><MapPin size={14} />{order.location}</p>
 
+      <div className="admin-detail-grid">
+        <div>
+          <span>Category</span>
+          <strong>{order.category}</strong>
+        </div>
+        <div>
+          <span>Requested</span>
+          <strong>{new Date(order.timestamp).toLocaleDateString()}</strong>
+        </div>
+      </div>
+
       <div className="inspector-section">
         <label>REQUESTED BY</label>
         <div className="person-line">
           <span className="avatar avatar-fallback">{order.name.slice(0, 1)}</span>
-          <div><strong>{order.name}</strong><span>Requester</span></div>
-          <div className="person-actions"><button title="Phone"><Phone size={15} /></button><button title="Email"><Mail size={15} /></button></div>
+          <div><strong>{order.name}</strong><span>{order.email || 'Requester'}</span></div>
+          <div className="person-actions">
+            <button title="Phone"><Phone size={15} /></button>
+            <button title="Email"><Mail size={15} /></button>
+          </div>
         </div>
       </div>
 
@@ -80,11 +98,16 @@ export function WorkOrderInspector({
       <div className="inspector-section">
         <label>DESCRIPTION</label>
         <p className="description-copy">{order.description}</p>
-        {order.tech_note && <div className="tech-note"><strong>Latest technician note</strong><span>{order.tech_note}</span></div>}
+        {order.tech_note && (
+          <div className="tech-note">
+            <strong>Latest technician note</strong>
+            <span>{order.tech_note}</span>
+          </div>
+        )}
       </div>
 
       <div className="inspector-section">
-        <label>PROGRESS TIMELINE</label>
+        <label>PROGRESS</label>
         <div className="timeline">
           {timeline.map(([label, done, detail], index) => (
             <div className={done ? 'timeline-item done' : 'timeline-item'} key={label}>
