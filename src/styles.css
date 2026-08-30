@@ -3982,3 +3982,106 @@ body{
   .admin-pagination>div{display:none}
   .admin-inspector-meta{grid-template-columns:1fr}
 }
+
+
+/* Technician completion → Tiffany verification workflow */
+.tech-permission-banner{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  margin:0 0 14px;
+  padding:13px 15px;
+  border:1px solid #d9e7f3;
+  border-radius:12px;
+  background:#f4f9fd;
+  color:#274c72;
+}
+.tech-permission-banner>svg{
+  flex:0 0 auto;
+  margin-top:1px;
+  color:#2f6ca3;
+}
+.tech-permission-banner>div{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.tech-permission-banner strong{
+  font-size:10px;
+}
+.tech-permission-banner span{
+  color:#667d94;
+  font-size:9px;
+  line-height:1.5;
+}
+.tech-readonly-photos{
+  grid-template-columns:repeat(2,64px);
+}
+.tech-workflow-actions{
+  padding:12px 20px 20px;
+  border-top:1px solid #e2e8ee;
+}
+.tech-action-help{
+  margin:0 0 10px;
+  color:#667d94;
+  font-size:9px;
+  line-height:1.55;
+}
+.tech-mark-done-button{
+  width:100%;
+  height:48px;
+  border:0;
+  border-radius:9px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  color:#fff;
+  background:linear-gradient(90deg,#176d52,#26966f);
+  font-size:11px;
+  font-weight:700;
+  box-shadow:0 8px 18px rgba(23,109,82,.16);
+}
+.tech-workflow-message{
+  display:flex;
+  gap:10px;
+  padding:13px;
+  border-radius:10px;
+  border:1px solid #dfe7ed;
+}
+.tech-workflow-message>svg{
+  flex:0 0 auto;
+  margin-top:1px;
+}
+.tech-workflow-message>div{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.tech-workflow-message strong{
+  font-size:10px;
+}
+.tech-workflow-message span{
+  font-size:9px;
+  line-height:1.45;
+}
+.tech-workflow-message.waiting{
+  color:#82621e;
+  background:#fff9eb;
+  border-color:#f0dfad;
+}
+.tech-workflow-message.resolved{
+  color:#2e6c4a;
+  background:#eff8f3;
+  border-color:#d8eadf;
+}
+.tiffany-only-message{
+  margin:8px 0 0;
+  padding:10px 11px;
+  border-radius:8px;
+  color:#785d22;
+  background:#fff9ec;
+  border:1px solid #eedda9;
+  font-size:9px;
+  line-height:1.4;
+}
