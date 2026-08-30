@@ -16,13 +16,24 @@ import type { Profile, WorkOrder, WorkOrderStatus } from './types';
 const protectedPaths = ['/admin','/tech','/app'];
 const isProtected = protectedPaths.some(path => window.location.pathname.toLowerCase().startsWith(path));
 
+function readLegacyProfile(): Profile | null {
+  try {
+    const raw = localStorage.getItem('br_legacy_profile');
+    if (!raw) return null;
+    return JSON.parse(raw) as Profile;
+  } catch {
+    return null;
+  }
+}
+
 function OperationsApp() {
-  const [authReady, setAuthReady] = useState(demoMode);
-  const [authenticated, setAuthenticated] = useState(demoMode);
+  const initialLegacyProfile = readLegacyProfile();
+  const [authReady, setAuthReady] = useState(demoMode || !!initialLegacyProfile);
+  const [authenticated, setAuthenticated] = useState(demoMode || !!initialLegacyProfile);
   const [profile, setProfile] = useState<Profile | null>(
     demoMode
       ? { id:'demo', email:'tiffany@blueridge.local', full_name:'Tiffany Walsh', role:'admin', can_resolve:true }
-      : null
+      : initialLegacyProfile
   );
   const [orders, setOrders] = useState<WorkOrder[]>([]);
   const [selected, setSelected] = useState<WorkOrder | null>(null);
@@ -55,7 +66,7 @@ function OperationsApp() {
   }, []);
 
   useEffect(() => {
-    if (demoMode || !supabase) return;
+    if (demoMode || readLegacyProfile()) return;
 
     supabase.auth.getSession().then(({ data }) => {
       setAuthenticated(!!data.session);
@@ -161,7 +172,9 @@ function OperationsApp() {
   }
 
   async function logout() {
-    if (!demoMode && supabase) await supabase.auth.signOut();
+    localStorage.removeItem('br_legacy_profile');
+    if (!demoMode) await supabase.auth.signOut();
+    setProfile(null);
     setAuthenticated(false);
   }
 
@@ -175,7 +188,15 @@ function OperationsApp() {
   }
 
   if (!authenticated) {
-    return <LoginScreen onAuthenticated={() => setAuthenticated(true)} />;
+    return (
+      <LoginScreen
+        onAuthenticated={() => {
+          setProfile(readLegacyProfile());
+          setAuthenticated(true);
+          setAuthReady(true);
+        }}
+      />
+    );
   }
 
   const isAdmin = profile?.role === 'admin';
