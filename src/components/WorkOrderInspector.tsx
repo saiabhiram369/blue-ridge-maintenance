@@ -8,16 +8,24 @@ interface Props {
   onClose: () => void;
   onStatusChange: (status: WorkOrderStatus) => void;
   onTechnicianChange: (technician: string) => void;
+  isAdmin: boolean;
+  canResolve: boolean;
 }
 
-const statuses: WorkOrderStatus[] = ['Open', 'In Progress', 'On Hold', 'Pending Tiffany', 'Resolved'];
+const adminStatuses: WorkOrderStatus[] = ['Open', 'In Progress', 'On Hold', 'Pending Tiffany', 'Resolved'];
 
-export function WorkOrderInspector({ order, onClose, onStatusChange, onTechnicianChange }: Props) {
+export function WorkOrderInspector({
+  order, onClose, onStatusChange, onTechnicianChange, isAdmin, canResolve
+}: Props) {
   if (!order) return (
     <aside className="inspector glass inspector-empty">
       <div><span className="empty-orb" /><h3>Select a work order</h3><p>Details, assignment, notes and status history will appear here.</p></div>
     </aside>
   );
+
+  const statusOptions: WorkOrderStatus[] = isAdmin
+    ? adminStatuses.filter(status => status !== 'Resolved' || canResolve || order.status === 'Resolved')
+    : Array.from(new Set<WorkOrderStatus>([order.status, 'Pending Tiffany']));
 
   const timeline = [
     ['Order Created', true, new Date(order.timestamp).toLocaleString()],
@@ -54,7 +62,12 @@ export function WorkOrderInspector({ order, onClose, onStatusChange, onTechnicia
         <label>ASSIGNED TECHNICIAN</label>
         <div className="assignment-control">
           <UserRoundPlus size={16} />
-          <select value={order.technician || ''} onChange={e => onTechnicianChange(e.target.value)}>
+          <select
+            value={order.technician || ''}
+            onChange={e => onTechnicianChange(e.target.value)}
+            disabled={!isAdmin}
+            title={isAdmin ? 'Assign technician' : 'Only administrators can reassign work orders'}
+          >
             <option value="">Unassigned</option>
             <option>Ethan</option>
             <option>Eric</option>
@@ -85,11 +98,18 @@ export function WorkOrderInspector({ order, onClose, onStatusChange, onTechnicia
 
       <div className="inspector-actions">
         <select value={order.status} onChange={e => onStatusChange(e.target.value as WorkOrderStatus)}>
-          {statuses.map(status => <option key={status}>{status}</option>)}
+          {statusOptions.map(status => <option key={status}>{status}</option>)}
         </select>
-        <button className="resolve-btn" onClick={() => onStatusChange('Resolved')} disabled={order.status === 'Resolved'}>
-          <CheckCircle2 size={16} /> Resolve
-        </button>
+        {isAdmin && (
+          <button
+            className="resolve-btn"
+            onClick={() => onStatusChange('Resolved')}
+            disabled={!canResolve || order.status === 'Resolved'}
+            title={canResolve ? 'Resolve work order' : 'Your account is not authorized to resolve work orders'}
+          >
+            <CheckCircle2 size={16} /> Resolve
+          </button>
+        )}
       </div>
     </aside>
   );
