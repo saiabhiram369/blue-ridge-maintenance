@@ -27,4 +27,5 @@ export interface Profile {
   email: string;
   full_name: string;
   role: 'admin' | 'technician';
+  can_resolve?: boolean;
 }
