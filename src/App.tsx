@@ -195,14 +195,11 @@ function OperationsApp() {
           </div>
         </header>
 
-        <section className="page-heading">
+        <section className="page-heading admin-page-heading">
           <div>
-            <span className="eyebrow">FACILITIES COMMAND CENTER</span>
-            <h1>
-              Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'},
-              {' '}{profile?.full_name?.split(' ')[0] || 'team'}.
-            </h1>
-            <p>Prioritize what matters, assign the right person, and move every request to resolution.</p>
+            <span className="eyebrow">BLUE RIDGE PRESERVATION MAINTENANCE</span>
+            <h1>Facilities Operations</h1>
+            <p>Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {profile?.full_name?.split(' ')[0] || 'team'}. Prioritize requests, assign technicians, and move work to resolution.</p>
           </div>
           <div className="live-chip"><i/> Live operations</div>
         </section>
