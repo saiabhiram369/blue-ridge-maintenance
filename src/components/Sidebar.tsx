@@ -1,6 +1,6 @@
 import {
   BarChart3, Building2, CalendarDays, ClipboardList, LayoutDashboard,
-  LogOut, Menu, Users, Wrench, X
+  LogOut, Menu, Mountain, Users, X
 } from 'lucide-react';
 import type { Profile } from '../types';
 
@@ -23,36 +23,49 @@ const nav = [
 export function Sidebar({ profile, mobileOpen, onToggle, onLogout }: Props) {
   return (
     <>
-      <button className="mobile-menu glass" onClick={onToggle} aria-label="Toggle navigation">
+      <button className="mobile-menu admin-mobile-menu" onClick={onToggle} aria-label="Toggle navigation">
         {mobileOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
-      <aside className={`sidebar glass ${mobileOpen ? 'open' : ''}`}>
-        <div className="brand">
-          <div className="brand-mark"><span /><span /><span /></div>
-          <div><strong>BLUE RIDGE</strong><small>FACILITIES</small></div>
+
+      <aside className={`sidebar admin-sidebar ${mobileOpen ? 'open' : ''}`}>
+        <div className="admin-brand">
+          <span className="admin-brand-icon"><Mountain size={24} /></span>
+          <div>
+            <strong>Blue Ridge</strong>
+            <small>Preservation Maintenance</small>
+          </div>
         </div>
 
-        <nav className="sidebar-nav">
+        <nav className="sidebar-nav admin-nav">
           {nav.map(([Icon, label], index) => (
-            <button key={label} className={index === 0 ? 'active' : ''} title={index ? 'Coming in V2' : label}>
-              <Icon size={18} strokeWidth={1.7} /><span>{label}</span>
+            <button
+              key={label}
+              className={index === 0 ? 'active' : ''}
+              title={index ? 'Coming in V2' : label}
+            >
+              <Icon size={18} strokeWidth={1.7} />
+              <span>{label}</span>
             </button>
           ))}
         </nav>
 
-        <div className="team-capacity glass-inset">
-          <div className="widget-head"><span>TEAM LOAD</span><small>This week</small></div>
-          <div className="capacity">
-            <div className="capacity-ring"><strong>72%</strong><small>capacity</small></div>
-            <div className="capacity-legend">
-              <span><i className="busy" /> Busy <b>72%</b></span>
-              <span><i className="available" /> Available <b>20%</b></span>
-              <span><i className="offline" /> Offline <b>8%</b></span>
-            </div>
+        <div className="admin-team-card">
+          <div className="admin-team-head">
+            <span>Team capacity</span>
+            <small>This week</small>
+          </div>
+          <div className="admin-team-value">
+            <strong>72%</strong>
+            <span>utilized</span>
+          </div>
+          <div className="admin-capacity-bar"><i /></div>
+          <div className="admin-capacity-meta">
+            <span>Available 20%</span>
+            <span>Offline 8%</span>
           </div>
         </div>
 
-        <div className="sidebar-user">
+        <div className="sidebar-user admin-sidebar-user">
           <div className="avatar avatar-fallback">{profile?.full_name?.slice(0, 1) || 'B'}</div>
           <div className="sidebar-user-copy">
             <strong>{profile?.full_name || 'Operations'}</strong>
