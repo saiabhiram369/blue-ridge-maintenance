@@ -1,5 +1,5 @@
 import {
-  Camera, CheckCircle2, ChevronRight, ClipboardList, Mail, MapPin,
+  Camera, CheckCircle2, ChevronRight, ClipboardList, Mail, MapPin, Mountain,
   Phone, ShieldCheck, Sparkles, UserRound
 } from 'lucide-react';
 import { useState } from 'react';
@@ -61,12 +61,12 @@ export function PublicRequest(){
     <div className="ref-mountains" aria-hidden="true"><i/><i/><i/></div>
 
     <header className="ref-desktop-header">
-      <div className="ref-header-brand">Blue Ridge Preservation Maintenance</div>
+      <div className="ref-header-brand"><Mountain size={34}/><strong>Blue Ridge Preservation Maintenance</strong></div>
       <div className="ref-header-secure"><ShieldCheck size={13}/>Secure facility services</div>
     </header>
 
     <header className="ref-mobile-header">
-      <div className="ref-mobile-brand">Blue Ridge Preservation Maintenance</div>
+      <div className="ref-mobile-brand"><Mountain size={25}/><strong>Blue Ridge Preservation Maintenance</strong></div>
       <div className="ref-mobile-secure"><ShieldCheck size={12}/>Secure</div>
     </header>
 
