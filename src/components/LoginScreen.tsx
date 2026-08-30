@@ -39,7 +39,7 @@ export function LoginScreen({ onAuthenticated }: Props) {
       email: record.email,
       full_name: isTech ? name : `${name} Walsh`.replace('Abhiram Walsh','Abhiram').replace('Catherine Walsh','Catherine').replace('Corey Walsh','Corey'),
       role: isTech ? 'technician' : 'admin',
-      can_resolve: !isTech
+      can_resolve: !isTech && name === 'Tiffany'
     };
 
     localStorage.setItem('br_legacy_profile', JSON.stringify(profile));

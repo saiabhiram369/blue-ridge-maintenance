@@ -11,7 +11,7 @@ interface Props {
   onLogout: () => void;
 }
 
-const nav = [
+const adminNav = [
   [LayoutDashboard, 'Dashboard'],
   [ClipboardList, 'Work Orders'],
   [Users, 'Technicians'],
@@ -21,7 +21,13 @@ const nav = [
   [Settings, 'Settings']
 ] as const;
 
+const techNav = [
+  [ClipboardList, 'My Work Orders']
+] as const;
+
 export function Sidebar({ profile, mobileOpen, onToggle, onLogout }: Props) {
+  const nav = profile?.role === 'technician' ? techNav : adminNav;
+
   return (
     <>
       <button className="mobile-menu admin-mobile-menu" onClick={onToggle} aria-label="Toggle navigation">
@@ -42,7 +48,7 @@ export function Sidebar({ profile, mobileOpen, onToggle, onLogout }: Props) {
             <button
               key={label}
               className={index === 0 ? 'active' : ''}
-              title={index ? 'Coming soon' : label}
+              title={label}
             >
               <Icon size={18} strokeWidth={1.7} />
               <span>{label}</span>
@@ -57,7 +63,7 @@ export function Sidebar({ profile, mobileOpen, onToggle, onLogout }: Props) {
         <div className="sidebar-user admin-sidebar-user">
           <div className="avatar avatar-fallback">{profile?.full_name?.slice(0, 1) || 'T'}</div>
           <div className="sidebar-user-copy">
-            <strong>{profile?.full_name || 'Tiffany Walsh'}</strong>
+            <strong>{profile?.full_name || 'Operations'}</strong>
             <small>{profile?.role === 'technician' ? 'Technician' : 'Admin'}</small>
           </div>
           <button onClick={onLogout} title="Sign out"><LogOut size={17} /></button>
