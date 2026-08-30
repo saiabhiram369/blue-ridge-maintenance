@@ -2559,3 +2559,142 @@ body{
     font-size:20px;
   }
 }
+
+
+/* V2.7 final approved reference sizing */
+.ref-desktop-header{
+  max-width:1540px;
+  min-height:112px;
+  padding:8px 46px 0;
+}
+.ref-header-brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  color:#17345b;
+  font-family:'Noto Sans',sans-serif;
+}
+.ref-header-brand svg{
+  color:#174f8f;
+  stroke-width:2;
+}
+.ref-header-brand strong{
+  font-size:20px;
+  line-height:1;
+  font-weight:700;
+  letter-spacing:-.35px;
+}
+.ref-header-secure{
+  font-size:11px;
+}
+.ref-card{
+  width:min(980px,calc(100vw - 72px));
+  margin-top:2px;
+  padding:27px 32px 22px;
+}
+.ref-card-intro h1{
+  font-size:48px;
+}
+.ref-card-intro p{
+  font-size:12px;
+  max-width:620px;
+}
+.ref-kicker{
+  font-size:10px;
+}
+.ref-section-title>strong{
+  font-size:10px;
+}
+.ref-card label{
+  font-size:10px;
+}
+.ref-card input,
+.ref-card select{
+  height:42px;
+  font-size:11px;
+}
+.ref-card textarea{
+  min-height:66px;
+  font-size:11px;
+}
+.ref-bottom-grid{
+  grid-template-columns:1fr 210px;
+}
+.ref-priority button{
+  height:53px;
+}
+.ref-upload{
+  min-height:61px;
+}
+.ref-routing{
+  min-height:48px;
+}
+.ref-submit{
+  height:48px;
+  font-size:12px;
+}
+.ref-privacy{
+  font-size:7px;
+}
+.ref-mountains{
+  height:57vh;
+  min-height:430px;
+}
+
+@media(max-width:1100px) and (min-width:761px){
+  .ref-card{
+    width:min(900px,calc(100vw - 48px));
+  }
+  .ref-desktop-header{
+    padding-left:28px;
+    padding-right:28px;
+  }
+}
+@media(max-width:760px){
+  .ref-mobile-header{
+    min-height:76px;
+    grid-template-columns:1fr auto;
+  }
+  .ref-mobile-brand{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:#17345b;
+    font-family:'Noto Sans',sans-serif;
+  }
+  .ref-mobile-brand strong{
+    font-size:16px;
+    line-height:1.1;
+    font-weight:700;
+    letter-spacing:-.2px;
+  }
+  .ref-mobile-brand svg{
+    flex:0 0 auto;
+    color:#174f8f;
+  }
+  .ref-card{
+    width:100%;
+    margin-top:0;
+    padding-top:12px;
+  }
+  .ref-card-intro h1{
+    font-size:38px;
+  }
+  .ref-card-intro p{
+    font-size:11px;
+  }
+  .ref-kicker{
+    font-size:8px;
+  }
+  .ref-card label{
+    font-size:10px;
+  }
+  .ref-submit{
+    font-size:12px;
+  }
+}
+@media(max-width:390px){
+  .ref-mobile-brand strong{
+    font-size:14px;
+  }
+}
