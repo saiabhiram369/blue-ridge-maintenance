@@ -236,7 +236,6 @@ function OperationsApp() {
       ...selected,
       status:'Pending Tiffany',
       tech_marked_done:true,
-      tech_note_seen:false,
       updated_at:new Date().toISOString()
     };
 
