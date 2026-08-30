@@ -16,7 +16,9 @@ const isProtected = protectedPaths.some(path => window.location.pathname.toLower
 function OperationsApp() {
   const [authReady, setAuthReady] = useState(demoMode);
   const [authenticated, setAuthenticated] = useState(demoMode);
-  const [profile, setProfile] = useState<Profile | null>(demoMode ? { id:'demo', email:'demo@blueridge.local', full_name:'Bianca Roberts', role:'admin' } : null);
+  const [profile, setProfile] = useState<Profile | null>(
+    demoMode ? { id:'demo', email:'demo@blueridge.local', full_name:'Bianca Roberts', role:'admin', can_resolve:true } : null
+  );
   const [orders, setOrders] = useState<WorkOrder[]>([]);
   const [selected, setSelected] = useState<WorkOrder | null>(null);
   const [search, setSearch] = useState('');
@@ -30,68 +32,107 @@ function OperationsApp() {
     if (demoMode || !supabase) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setProfile(null); return; }
-    const { data } = await supabase.from('profiles').select('id,email,full_name,role').eq('id', user.id).maybeSingle();
-    setProfile(data || { id:user.id, email:user.email || '', full_name:user.email?.split('@')[0] || 'User', role:'admin' });
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id,email,full_name,role,can_resolve')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (error) setNotice(error.message);
+    setProfile(data || {
+      id:user.id,
+      email:user.email || '',
+      full_name:user.email?.split('@')[0] || 'User',
+      role:'technician',
+      can_resolve:false
+    });
   }, []);
 
   useEffect(() => {
     if (demoMode || !supabase) return;
     supabase.auth.getSession().then(({ data }) => {
-      setAuthenticated(!!data.session); setAuthReady(true);
+      setAuthenticated(!!data.session);
+      setAuthReady(true);
       if (data.session) hydrateProfile();
     });
+
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setAuthenticated(!!session); setAuthReady(true);
-      if (session) hydrateProfile(); else setProfile(null);
+      setAuthenticated(!!session);
+      setAuthReady(true);
+      if (session) hydrateProfile();
+      else setProfile(null);
     });
     return () => listener.subscription.unsubscribe();
   }, [hydrateProfile]);
 
   const loadOrders = useCallback(async () => {
-    setBusy(true); setNotice('');
+    setBusy(true);
+    setNotice('');
     try {
       let next: WorkOrder[];
       if (demoMode || !supabase) {
         next = demoOrders;
       } else {
-        const { data, error } = await supabase.from('maintenance_requests').select('*').order('timestamp', { ascending:false });
+        const { data, error } = await supabase
+          .from('maintenance_requests')
+          .select('*')
+          .order('timestamp', { ascending:false });
         if (error) throw error;
         next = (data || []) as WorkOrder[];
-        if (profile?.role === 'technician') next = next.filter(order => order.technician === profile.full_name);
       }
+
       setOrders(next);
-      setSelected(current => current ? next.find(o => o.ticket_id === current.ticket_id) || next[0] || null : next[0] || null);
+      setSelected(current =>
+        current
+          ? next.find(order => order.ticket_id === current.ticket_id) || next[0] || null
+          : next[0] || null
+      );
     } catch (err) {
       setNotice(err instanceof Error ? err.message : 'Could not load work orders.');
-    } finally { setBusy(false); }
-  }, [profile]);
+    } finally {
+      setBusy(false);
+    }
+  }, []);
 
-  useEffect(() => { if (authenticated) loadOrders(); }, [authenticated, loadOrders]);
+  useEffect(() => {
+    if (authenticated && (demoMode || profile)) loadOrders();
+  }, [authenticated, profile, loadOrders]);
 
   const filtered = useMemo(() => orders.filter(order => {
-    const haystack = [order.ticket_id,order.title,order.location,order.name,order.technician].join(' ').toLowerCase();
-    return (!search || haystack.includes(search.toLowerCase())) && (!status || order.status === status) && (!priority || order.priority === priority);
+    const haystack = [order.ticket_id,order.title,order.location,order.name,order.technician]
+      .join(' ')
+      .toLowerCase();
+    return (!search || haystack.includes(search.toLowerCase()))
+      && (!status || order.status === status)
+      && (!priority || order.priority === priority);
   }), [orders, search, status, priority]);
 
   const counts = useMemo(() => ({
-    open: orders.filter(o => o.status === 'Open').length,
-    progress: orders.filter(o => o.status === 'In Progress').length,
-    pending: orders.filter(o => o.status === 'Pending Tiffany').length,
-    complete: orders.filter(o => o.status === 'Resolved').length
+    open: orders.filter(order => order.status === 'Open').length,
+    progress: orders.filter(order => order.status === 'In Progress').length,
+    pending: orders.filter(order => order.status === 'Pending Tiffany').length,
+    complete: orders.filter(order => order.status === 'Resolved').length
   }), [orders]);
 
   async function patchSelected(patch: Partial<WorkOrder>) {
     if (!selected) return;
     const before = selected;
     const updated = { ...selected, ...patch, updated_at:new Date().toISOString() };
+
     setSelected(updated);
-    setOrders(list => list.map(o => o.ticket_id === updated.ticket_id ? updated : o));
+    setOrders(list => list.map(order => order.ticket_id === updated.ticket_id ? updated : order));
+
     if (!demoMode && supabase) {
-      const { error } = await supabase.from('maintenance_requests').update({ ...patch, updated_at:updated.updated_at }).eq('ticket_id', selected.ticket_id);
+      const { error } = await supabase
+        .from('maintenance_requests')
+        .update({ ...patch, updated_at:updated.updated_at })
+        .eq('ticket_id', selected.ticket_id);
+
       if (error) {
         setNotice(error.message);
         setSelected(before);
-        setOrders(list => list.map(o => o.ticket_id === before.ticket_id ? before : o));
+        setOrders(list => list.map(order => order.ticket_id === before.ticket_id ? before : order));
       }
     }
   }
@@ -101,30 +142,68 @@ function OperationsApp() {
     setAuthenticated(false);
   }
 
-  if (!authReady) return <div className="boot-screen"><div className="boot-orb"/><span>Preparing operations workspace…</span></div>;
+  if (!authReady) {
+    return <div className="boot-screen"><div className="boot-orb"/><span>Preparing operations workspace…</span></div>;
+  }
   if (!authenticated) return <LoginScreen onAuthenticated={() => setAuthenticated(true)} />;
+
+  const isAdmin = profile?.role === 'admin';
+  const canResolve = !!profile?.can_resolve;
 
   return (
     <div className="app-shell">
       <div className="ambient ambient-a"/><div className="ambient ambient-b"/><div className="ambient ambient-c"/>
-      <Sidebar profile={profile} mobileOpen={mobileOpen} onToggle={() => setMobileOpen(v => !v)} onLogout={logout}/>
+      <Sidebar
+        profile={profile}
+        mobileOpen={mobileOpen}
+        onToggle={() => setMobileOpen(value => !value)}
+        onLogout={logout}
+      />
 
       <main className="workspace">
         <header className="topbar">
-          <div className="searchbox glass"><Search size={18}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search work orders, locations, or technicians…"/><kbd>⌘ K</kbd></div>
+          <div className="searchbox glass">
+            <Search size={18}/>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search work orders, locations, or technicians…"/>
+            <kbd>⌘ K</kbd>
+          </div>
           <div className="top-filters">
-            <label className="filter glass"><SlidersHorizontal size={15}/><select value={status} onChange={e => setStatus(e.target.value)}><option value="">All statuses</option><option>Open</option><option>In Progress</option><option>On Hold</option><option>Pending Tiffany</option><option>Resolved</option></select></label>
-            <label className="filter glass"><select value={priority} onChange={e => setPriority(e.target.value)}><option value="">All priorities</option><option>Urgent</option><option>High</option><option>Medium</option><option>Low</option></select></label>
+            <label className="filter glass">
+              <SlidersHorizontal size={15}/>
+              <select value={status} onChange={e => setStatus(e.target.value)}>
+                <option value="">All statuses</option>
+                <option>Open</option><option>In Progress</option><option>On Hold</option>
+                <option>Pending Tiffany</option><option>Resolved</option>
+              </select>
+            </label>
+            <label className="filter glass">
+              <select value={priority} onChange={e => setPriority(e.target.value)}>
+                <option value="">All priorities</option>
+                <option>Urgent</option><option>High</option><option>Medium</option><option>Low</option>
+              </select>
+            </label>
           </div>
           <div className="top-actions">
-            <div className="date-chip glass"><CalendarDays size={15}/>{new Date().toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}</div>
-            <button className="icon-btn glass"><Bell size={17}/><i/></button>
-            <button className="icon-btn glass" onClick={loadOrders} title="Refresh"><RefreshCw className={busy ? 'spinning' : ''} size={17}/></button>
+            <div className="date-chip glass">
+              <CalendarDays size={15}/>
+              {new Date().toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}
+            </div>
+            <button className="icon-btn glass" aria-label="Notifications"><Bell size={17}/><i/></button>
+            <button className="icon-btn glass" onClick={loadOrders} title="Refresh">
+              <RefreshCw className={busy ? 'spinning' : ''} size={17}/>
+            </button>
           </div>
         </header>
 
         <section className="page-heading">
-          <div><span className="eyebrow">FACILITIES COMMAND CENTER</span><h1>Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {profile?.full_name?.split(' ')[0] || 'team'}.</h1><p>Prioritize what matters, assign the right person, and move every request to resolution.</p></div>
+          <div>
+            <span className="eyebrow">FACILITIES COMMAND CENTER</span>
+            <h1>
+              Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'},
+              {' '}{profile?.full_name?.split(' ')[0] || 'team'}.
+            </h1>
+            <p>Prioritize what matters, assign the right person, and move every request to resolution.</p>
+          </div>
           <div className="live-chip"><i/> Live operations</div>
         </section>
 
@@ -138,12 +217,18 @@ function OperationsApp() {
         {notice && <div className="system-notice">{notice}</div>}
 
         <section className="operations-grid">
-          <WorkOrderQueue orders={filtered} selectedId={selected?.ticket_id} onSelect={setSelected}/>
+          <WorkOrderQueue
+            orders={filtered}
+            selectedId={selected?.ticket_id}
+            onSelect={setSelected}
+          />
           <WorkOrderInspector
             order={selected}
             onClose={() => setSelected(null)}
             onStatusChange={(next: WorkOrderStatus) => patchSelected({ status: next })}
             onTechnicianChange={(technician: string) => patchSelected({ technician: technician || null })}
+            isAdmin={isAdmin}
+            canResolve={canResolve}
           />
         </section>
       </main>
