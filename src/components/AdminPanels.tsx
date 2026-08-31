@@ -19,7 +19,7 @@ export function TechniciansPanel({ orders, onOpenTechnician }: TechniciansProps)
         name,
         assigned: assigned.length,
         active: assigned.filter(order => ['Open','In Progress','On Hold'].includes(order.status)).length,
-        pending: assigned.filter(order => order.status === 'Pending Admin Approval').length,
+        pending: assigned.filter(order => order.status === 'Pending Tiffany').length,
         completed: assigned.filter(order => order.status === 'Resolved').length
       };
     });
@@ -148,7 +148,7 @@ export function ReportsPanel({ orders }: { orders: WorkOrder[] }) {
       ['Total created', String(current.length)],
       ['Open', String(current.filter(order => order.status === 'Open').length)],
       ['In Progress', String(current.filter(order => order.status === 'In Progress').length)],
-      ['Pending Admin Approval', String(current.filter(order => order.status === 'Pending Admin Approval').length)],
+      ['Pending Admin Approval', String(current.filter(order => order.status === 'Pending Tiffany').length)],
       ['Resolved', String(current.filter(order => order.status === 'Resolved').length)],
       [],
       ['Ticket ID','Location','Priority','Status','Technician','Title'],
