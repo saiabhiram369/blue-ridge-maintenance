@@ -5235,3 +5235,58 @@ body{
     grid-template-columns:40px 1fr;
   }
 }
+
+
+/* Secure 4-digit PIN login */
+.pin-auth-card{
+  max-width:430px;
+}
+.pin-auth-card .auth-input-with-icon{
+  height:50px;
+}
+.pin-auth-card .auth-input-with-icon select{
+  flex:1;
+  width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#17385f;
+  font-size:14px;
+  font-weight:600;
+}
+.pin-entry-wrap{
+  height:58px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 16px;
+  border:1px solid #d8e3ec;
+  border-radius:14px;
+  background:#f9fbfd;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
+}
+.pin-entry-wrap:focus-within{
+  border-color:#6fa3cf;
+  box-shadow:0 0 0 3px rgba(74,134,187,.10);
+}
+.pin-entry-wrap svg{
+  color:#4f78a0;
+  flex:0 0 auto;
+}
+.pin-entry-wrap input{
+  width:100%;
+  border:0!important;
+  outline:0!important;
+  background:transparent!important;
+  padding:0!important;
+  color:#14345d;
+  font-family:'Manrope',sans-serif;
+  font-size:28px!important;
+  font-weight:700;
+  letter-spacing:12px;
+  text-align:center;
+}
+.pin-auth-card form>button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
