@@ -39,7 +39,9 @@ export function WorkOrderInspector({
   );
 
   const statusOptions = adminStatuses.filter(status =>
-    status !== 'Resolved' || canResolve || order.status === 'Resolved'
+    status !== 'Resolved'
+    || order.status === 'Resolved'
+    || (canResolve && order.status === 'Pending Tiffany')
   );
 
   const timeline = [
@@ -176,7 +178,7 @@ export function WorkOrderInspector({
             {statusOptions.map(status=><option key={status}>{status}</option>)}
           </select>
 
-          {canResolve && !resolved && (
+          {canResolve && order.status === 'Pending Tiffany' && !resolved && (
             <button className="admin-change-status" onClick={() => onStatusChange('Resolved')}>
               <span>Verify & Close Work Order</span>
               <CheckCircle2 size={17}/>
