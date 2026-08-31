@@ -29,3 +29,15 @@ export interface Profile {
   role: 'admin' | 'technician';
   can_resolve?: boolean;
 }
+
+
+export interface AdminNotification {
+  id: string;
+  ticket_id: string;
+  event_type: 'technician_completed' | 'needs_assignment';
+  title: string;
+  message: string;
+  technician?: string | null;
+  created_at: string;
+  closed_at?: string | null;
+}
