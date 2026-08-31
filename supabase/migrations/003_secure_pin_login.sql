@@ -27,6 +27,50 @@ alter table public.staff_pin_access enable row level security;
 revoke all on public.staff_pin_access from anon;
 revoke all on public.staff_pin_access from authenticated;
 
+-- From this point forward, profile roles come from the configured staff PIN
+-- record rather than from any hard-coded email address.
+create or replace function public.handle_blue_ridge_auth_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $
+declare
+  access_role text;
+  access_name text;
+begin
+  select spa.role, spa.display_name
+  into access_role, access_name
+  from public.staff_pin_access spa
+  where spa.auth_user_id = new.id
+  limit 1;
+
+  insert into public.profiles (
+    id,email,full_name,role,can_resolve,updated_at
+  )
+  values (
+    new.id,
+    coalesce(new.email,''),
+    coalesce(
+      access_name,
+      nullif(new.raw_user_meta_data->>'full_name',''),
+      split_part(coalesce(new.email,'User'),'@',1)
+    ),
+    coalesce(access_role,'technician'),
+    coalesce(access_role = 'admin' and lower(access_name) = 'tiffany', false),
+    now()
+  )
+  on conflict (id) do update set
+    email = excluded.email,
+    full_name = excluded.full_name,
+    role = excluded.role,
+    can_resolve = excluded.can_resolve,
+    updated_at = now();
+
+  return new;
+end;
+$;
+
 -- Configure or rotate a staff PIN from SQL Editor.
 -- This function is intentionally not callable by anon/authenticated users.
 create or replace function public.configure_staff_pin(
@@ -89,8 +133,19 @@ begin
     failed_attempts = 0,
     locked_until = null,
     updated_at = now();
+
+  update public.profiles
+  set
+    full_name = btrim(p_display_name),
+    role = p_role,
+    can_resolve = (
+      p_role = 'admin'
+      and lower(btrim(p_display_name)) = 'tiffany'
+    ),
+    updated_at = now()
+  where id = target_user;
 end;
-$$;
+$;
 
 revoke all on function public.configure_staff_pin(text,text,text,text) from public;
 revoke all on function public.configure_staff_pin(text,text,text,text) from anon;
