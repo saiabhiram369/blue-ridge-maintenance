@@ -46,8 +46,8 @@ export function WorkOrderInspector({
     ['Created', true, new Date(order.timestamp).toLocaleString(), order.name],
     ['Assigned to ' + (order.technician || 'technician'), !!order.technician, order.technician ? 'Assignment confirmed' : 'Awaiting assignment', order.supervisor || 'Operations'],
     ['In Progress', ['In Progress','Pending Tiffany','Resolved'].includes(order.status), order.status === 'Open' ? 'Pending' : 'Work started', order.technician || 'Technician'],
-    ['Pending Tiffany', ['Pending Tiffany','Resolved'].includes(order.status), order.tech_marked_done ? 'Technician marked work complete' : 'Awaiting technician completion', order.technician || 'Technician'],
-    ['Resolved / Closed', order.status === 'Resolved', order.status === 'Resolved' ? 'Verified and closed' : 'Awaiting Tiffany verification', 'Tiffany']
+    ['Pending admin approval', ['Pending Tiffany','Resolved'].includes(order.status), order.tech_marked_done ? 'Technician marked work complete' : 'Awaiting technician completion', order.technician || 'Technician'],
+    ['Resolved / Closed', order.status === 'Resolved', order.status === 'Resolved' ? 'Verified and closed' : 'Awaiting admin verification', 'Admin']
   ] as const;
 
   const photos = (order.photos || []).filter(Boolean).slice(0,2);
@@ -104,7 +104,7 @@ export function WorkOrderInspector({
         </div>
         <div>
           <span>Final approval</span>
-          <strong>{resolved ? 'Closed by Tiffany' : 'Tiffany'}</strong>
+          <strong>{resolved ? 'Verified by admin' : 'Tiffany primary · admin fallback'}</strong>
         </div>
       </div>
 
@@ -145,7 +145,7 @@ export function WorkOrderInspector({
               <CheckCircle2 size={18}/>
               <div>
                 <strong>Work order closed</strong>
-                <span>Tiffany verified the work and closed this request.</span>
+                <span>An authorized admin verified the work and closed this request.</span>
               </div>
             </div>
           ) : awaitingTiffany ? (
@@ -153,13 +153,13 @@ export function WorkOrderInspector({
               <CheckCircle2 size={18}/>
               <div>
                 <strong>Work marked done</strong>
-                <span>Awaiting Tiffany's final verification. You cannot close this work order.</span>
+                <span>Awaiting admin verification. Tiffany is the primary reviewer; another admin may close it if needed.</span>
               </div>
             </div>
           ) : (
             <>
               <p className="tech-action-help">
-                When the work is physically complete, mark it done. Tiffany will review it before the work order closes.
+                When the work is physically complete, mark it done. It will move to the admin approval queue for final verification.
               </p>
               <button className="tech-mark-done-button" onClick={onMarkWorkDone}>
                 <CheckCircle2 size={18}/>
@@ -178,15 +178,9 @@ export function WorkOrderInspector({
 
           {canResolve && !resolved && (
             <button className="admin-change-status" onClick={() => onStatusChange('Resolved')}>
-              <span>Resolve & Close Work Order</span>
+              <span>Verify & Close Work Order</span>
               <CheckCircle2 size={17}/>
             </button>
-          )}
-
-          {!canResolve && order.status === 'Pending Tiffany' && (
-            <div className="tiffany-only-message">
-              Final closure is restricted to Tiffany.
-            </div>
           )}
 
           <button className="admin-note-button" onClick={onAddInternalNote}>Add Internal Note</button>
