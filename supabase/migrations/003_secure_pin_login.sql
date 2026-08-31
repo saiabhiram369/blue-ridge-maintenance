@@ -15,9 +15,11 @@ create table if not exists public.staff_pin_access (
   active boolean not null default true,
   failed_attempts integer not null default 0,
   locked_until timestamptz,
-  updated_at timestamptz not null default now(),
-  unique (lower(display_name), role)
+  updated_at timestamptz not null default now()
 );
+
+create unique index if not exists idx_staff_pin_access_name_role
+  on public.staff_pin_access (lower(display_name), role);
 
 alter table public.staff_pin_access enable row level security;
 
