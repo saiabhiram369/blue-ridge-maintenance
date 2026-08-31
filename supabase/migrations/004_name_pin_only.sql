@@ -29,6 +29,9 @@ revoke all on public.staff_pin_directory from public;
 revoke all on public.staff_pin_directory from anon;
 revoke all on public.staff_pin_directory from authenticated;
 
+-- Replace the older email-based 4-argument configurator from migration 003.
+drop function if exists public.configure_staff_pin(text,text,text,text);
+
 -- Configure/rotate a PIN using only display name + role + 4-digit code.
 create or replace function public.configure_staff_pin(
   p_display_name text,
