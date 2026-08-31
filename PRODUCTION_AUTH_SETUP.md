@@ -1,29 +1,58 @@
 # Production Authentication Setup
 
-The React application now uses Supabase Auth for /admin and /tech. The old browser-side PIN list is removed from the secure branch.
+The application uses Supabase Auth underneath, but staff see only a **name + private 4-digit PIN** login.
 
-## One-time Supabase steps
+## Security model
 
-1. In the Supabase project, open SQL Editor.
-2. Apply supabase/migrations/001_v2_security.sql if it has not already been applied.
-3. Apply supabase/migrations/002_production_auth.sql.
-4. In Authentication → Users, create the authorized facilities accounts.
+- PINs are bcrypt-hashed in Postgres.
+- PIN hashes are never readable by the browser.
+- The browser never receives or stores an email/password credential.
+- Five failed PIN attempts lock that staff PIN for 15 minutes.
+- Successful PIN verification is handled by the `pin-login` Supabase Edge Function.
+- The Edge Function creates a short-lived Supabase Auth session invisibly.
+- Row Level Security then decides what that staff member can read or change.
 
-Known admin accounts:
+## Already applied
 
-- abhiram@artoflivingretreat.org
-- tiffany@artoflivingretreat.org
-- catherine@artoflivingretreat.org
-- corey@artoflivingretreat.org
+- `supabase/migrations/002_production_auth.sql`
 
-Only Tiffany receives can_resolve=true.
+## Apply next
 
-For technician accounts, set the user's Full name metadata to the exact technician assignment value stored in maintenance_requests.technician, for example Ethan or Eric. This is what allows RLS to restrict technicians to their assigned work orders.
+1. Run `supabase/migrations/003_secure_pin_login.sql` in Supabase SQL Editor.
+2. Create the authorized users in Supabase Authentication.
+3. Deploy the Edge Function at `supabase/functions/pin-login/index.ts`.
+4. Configure one unique 4-digit PIN for each staff account using `public.configure_staff_pin(...)`.
+5. Test the preview branch before promoting it to production.
 
-## Expected behavior
+## Role behavior
 
-- /admin: authenticated admins can read all work orders.
-- /tech: authenticated technicians can read only work orders assigned to their profile full_name.
-- Technicians can only move assigned work orders to Pending Tiffany.
-- Only Tiffany can resolve/close.
-- Public users can still submit maintenance requests from /.
+Admin portal:
+- Abhiram
+- Tiffany
+- Catherine
+- Corey
+
+Technician portal:
+- Ethan
+- Eric
+
+Only Tiffany receives final resolve/close authority through `can_resolve=true`.
+
+Technicians must have a profile `full_name` exactly matching the value stored in `maintenance_requests.technician`.
+
+## PIN configuration example
+
+Use your real Supabase Auth email and a NEW private 4-digit code:
+
+```sql
+select public.configure_staff_pin(
+  'staff-email@example.org',
+  'Display Name',
+  'admin',
+  '1234'
+);
+```
+
+For a technician, use `technician` as the role.
+
+Do not reuse any PIN that was previously embedded in client-side code.
