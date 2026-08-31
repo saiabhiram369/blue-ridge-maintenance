@@ -30,8 +30,16 @@ begin
     raise exception 'Authentication required';
   end if;
 
-  -- Any authenticated admin may manage, verify, and close work orders.
+  -- Any authenticated admin may manage work orders.
+  -- Final closure is allowed only after technician completion submitted it for approval.
   if p.role = 'admin' then
+    if new.status = 'Resolved'
+       and old.status is distinct from 'Resolved'
+       and old.status <> 'Pending Tiffany'
+    then
+      raise exception 'Work order must be submitted for admin approval before it can be closed';
+    end if;
+
     return new;
   end if;
 
