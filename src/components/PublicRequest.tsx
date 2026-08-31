@@ -2,14 +2,11 @@ import {
   Camera, CheckCircle2, ChevronRight, ClipboardList, Mail, MapPin, Mountain,
   Phone, ShieldCheck, Sparkles, UserRound
 } from 'lucide-react';
-import emailjs from '@emailjs/browser';
 import { useState } from 'react';
 import { demoMode, supabase } from '../lib/supabase';
+import { notifyAdminsNewRequest } from '../lib/notifications';
 import type { Priority } from '../types';
 
-const EJS_PUBLIC_KEY = 'ATOjvujTTzM_lQ2DZ';
-const EJS_SERVICE_ID = 'service_rz1xa06';
-const EJS_TPL_NEW = 'template_sld7lxw';
 
 const categories = ['IT / Technology','General Maintenance','Electrical','Plumbing','HVAC / Climate','Carpentry / Structural','Grounds / Landscaping','Cleaning / Sanitation','Other'];
 const priorities: Priority[] = ['Low','Medium','High','Urgent'];
@@ -21,10 +18,11 @@ export function PublicRequest(){
   const [busy,setBusy]=useState(false);
   const [ticket,setTicket]=useState('');
   const [error,setError]=useState('');
+  const [notificationWarning,setNotificationWarning]=useState('');
   const set=(key:keyof typeof form,value:string)=>setForm(v=>({...v,[key]:value}));
 
   async function submit(e:React.FormEvent){
-    e.preventDefault(); setBusy(true); setError('');
+    e.preventDefault(); setBusy(true); setError(''); setNotificationWarning('');
     const ticketId='BR-'+crypto.randomUUID().slice(0,8).toUpperCase();
     try{
       if(!form.priority) throw new Error('Please choose a priority.');
@@ -47,21 +45,14 @@ export function PublicRequest(){
         });
         if(insertError) throw insertError;
 
-        emailjs.send(
-          EJS_SERVICE_ID,
-          EJS_TPL_NEW,
-          {
-            ticket_id: ticketId,
-            title: form.title,
-            from_name: form.name,
-            from_email: form.email,
-            category: form.category,
-            location: form.location,
-            priority: form.priority,
-            description: form.description
-          },
-          { publicKey: EJS_PUBLIC_KEY }
-        ).catch(err => console.warn('Email notification failed:', err));
+        try {
+          await notifyAdminsNewRequest(ticketId);
+        } catch (emailError) {
+          setNotificationWarning(
+            'Your request was saved, but the admin email notification could not be delivered yet.'
+          );
+          console.warn('Admin email notification failed:', emailError);
+        }
       }
       setTicket(ticketId);
     }catch(err){setError(err instanceof Error?err.message:'Unable to submit request.')}
@@ -73,6 +64,7 @@ export function PublicRequest(){
     <section className="ref-success">
       <div><CheckCircle2 size={30}/></div><span>REQUEST RECEIVED</span><h1>Thank you.</h1>
       <p>Your maintenance request has been created successfully.</p>
+      {notificationWarning && <div className="ref-error">{notificationWarning}</div>}
       <strong>{ticket}</strong>
       <button onClick={()=>{setTicket('');setForm(emptyForm);setFiles([])}}>Submit another request</button>
     </section>
