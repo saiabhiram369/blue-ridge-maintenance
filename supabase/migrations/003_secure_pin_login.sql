@@ -34,7 +34,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path = public
-as $
+as $profile_fn$
 declare
   access_role text;
   access_name text;
@@ -69,7 +69,7 @@ begin
 
   return new;
 end;
-$;
+$profile_fn$;
 
 -- Configure or rotate a staff PIN from SQL Editor.
 -- This function is intentionally not callable by anon/authenticated users.
@@ -83,7 +83,7 @@ returns void
 language plpgsql
 security definer
 set search_path = public, auth
-as $$
+as $configure_fn$
 declare
   target_user uuid;
 begin
@@ -145,7 +145,7 @@ begin
     updated_at = now()
   where id = target_user;
 end;
-$;
+$configure_fn$;
 
 revoke all on function public.configure_staff_pin(text,text,text,text) from public;
 revoke all on function public.configure_staff_pin(text,text,text,text) from anon;
@@ -161,7 +161,7 @@ returns table(auth_user_id uuid)
 language plpgsql
 security definer
 set search_path = public
-as $$
+as $verify_fn$
 declare
   row_data public.staff_pin_access;
 begin
@@ -212,7 +212,7 @@ begin
   auth_user_id := row_data.auth_user_id;
   return next;
 end;
-$$;
+$verify_fn$;
 
 revoke all on function public.verify_staff_pin(text,text,text) from public;
 revoke all on function public.verify_staff_pin(text,text,text) from anon;
