@@ -206,10 +206,7 @@ begin
     'internal-' || p_staff_id::text || '@pin.blueridge.invalid',
     staff_record.display_name,
     staff_record.role,
-    (
-      staff_record.role = 'admin'
-      and lower(staff_record.display_name) = 'tiffany'
-    ),
+    (staff_record.role = 'admin'),
     now()
   )
   on conflict (id) do update set
