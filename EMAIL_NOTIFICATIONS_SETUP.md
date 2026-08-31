@@ -3,6 +3,8 @@
 The application sends maintenance emails through the Supabase Edge Function
 `maintenance-email`. Staff authentication remains name + PIN only.
 
+Email delivery uses **Resend**, not Gmail/EmailJS.
+
 ## 1. Database migration
 
 Run:
@@ -11,17 +13,27 @@ Run:
 
 This adds new-request admin bell notifications and the email delivery log.
 
-## 2. Admin notification recipients
+## 2. Supabase Edge Function secrets
 
-In Supabase Edge Function secrets, create:
+Create these custom secrets in Supabase:
 
 `ADMIN_NOTIFICATION_EMAILS`
 
-Use a comma-separated list, for example:
+Comma-separated admin notification recipients, for example:
 
 `admin1@example.com,admin2@example.com,admin3@example.com`
 
-These addresses are used only for operational notifications. They are not used for login.
+`RESEND_API_KEY`
+
+Your Resend API key.
+
+`RESEND_FROM_EMAIL`
+
+A sender address on a verified Resend domain, for example:
+
+`Blue Ridge Maintenance <maintenance@example.org>`
+
+These addresses are only for operational notifications. Staff login still uses name + PIN.
 
 ## 3. Deploy Edge Function
 
@@ -43,7 +55,7 @@ The function performs its own authorization:
 ## 4. Notification workflow
 
 - New request: admin in-app notification + admin email.
-- Technician marks done: admin approval notification + email to configured admins.
+- Technician marks done: admin approval notification + admin email.
 - Admin verifies and closes: requester receives completion email.
 
 The `email_notification_log` table prevents duplicate email delivery for the same ticket/event.
