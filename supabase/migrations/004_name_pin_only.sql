@@ -49,31 +49,36 @@ begin
     raise exception 'PIN must contain exactly 4 digits';
   end if;
 
-  insert into public.staff_pin_directory (
-    display_name,
-    role,
-    pin_hash,
-    active,
-    failed_attempts,
-    locked_until,
-    updated_at
-  )
-  values (
-    btrim(p_display_name),
-    p_role,
-    crypt(p_pin, gen_salt('bf', 12)),
-    true,
-    0,
-    null,
-    now()
-  )
-  on conflict (lower(display_name), role)
-  do update set
-    pin_hash = excluded.pin_hash,
+  update public.staff_pin_directory
+  set
+    pin_hash = crypt(p_pin, gen_salt('bf', 12)),
     active = true,
     failed_attempts = 0,
     locked_until = null,
-    updated_at = now();
+    updated_at = now()
+  where lower(display_name) = lower(btrim(p_display_name))
+    and role = p_role;
+
+  if not found then
+    insert into public.staff_pin_directory (
+      display_name,
+      role,
+      pin_hash,
+      active,
+      failed_attempts,
+      locked_until,
+      updated_at
+    )
+    values (
+      btrim(p_display_name),
+      p_role,
+      crypt(p_pin, gen_salt('bf', 12)),
+      true,
+      0,
+      null,
+      now()
+    );
+  end if;
 end;
 $configure_name_pin$;
 
