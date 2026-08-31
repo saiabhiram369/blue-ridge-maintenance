@@ -15,7 +15,7 @@ import { TechnicianHero } from './components/TechnicianHero';
 import { WorkOrderInspector } from './components/WorkOrderInspector';
 import { WorkOrderQueue } from './components/WorkOrderQueue';
 import { demoOrders } from './data/demo';
-import { notifyRequesterResolved } from './lib/notifications';
+import { notifyAdminsTechnicianDone, notifyRequesterResolved } from './lib/notifications';
 import { demoMode, supabase } from './lib/supabase';
 import type { AdminNotification, Profile, WorkOrder, WorkOrderStatus } from './types';
 
@@ -477,7 +477,15 @@ function OperationsApp() {
       return;
     }
 
-    setNotice('Work marked done. Tiffany and the admin team have been notified for final verification.');
+    try {
+      await notifyAdminsTechnicianDone(updated);
+      setNotice('Work marked done. The admin team has been notified in-app and by email.');
+    } catch (emailError) {
+      setNotice(
+        'Work marked done and the in-app admin notification was created, but the admin email could not be delivered: '
+        + (emailError instanceof Error ? emailError.message : 'notification error')
+      );
+    }
   }
 
   function addInternalNote() {
