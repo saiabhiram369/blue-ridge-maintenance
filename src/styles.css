@@ -5290,3 +5290,34 @@ body{
   opacity:.55;
   cursor:not-allowed;
 }
+
+
+/* Admin approval notification queue */
+.notification-list>button{
+  position:relative;
+}
+.notification-list>button.unread{
+  background:#f1f7fd;
+  border-color:#bfd6e8;
+  box-shadow:inset 3px 0 0 #4b86b9;
+}
+.notification-unread-dot{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#2f79b6;
+  box-shadow:0 0 0 4px rgba(47,121,182,.10);
+}
+.notification-footnote{
+  margin-top:10px;
+  padding:10px 11px;
+  border:1px solid #dce6ed;
+  border-radius:10px;
+  background:#f8fbfd;
+  color:#6d8194;
+  font-size:8px;
+  line-height:1.5;
+}
