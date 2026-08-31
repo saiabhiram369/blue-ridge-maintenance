@@ -34,7 +34,7 @@ export interface Profile {
 export interface AdminNotification {
   id: string;
   ticket_id: string;
-  event_type: 'technician_completed' | 'needs_assignment';
+  event_type: 'new_request' | 'technician_completed' | 'needs_assignment';
   title: string;
   message: string;
   technician?: string | null;
