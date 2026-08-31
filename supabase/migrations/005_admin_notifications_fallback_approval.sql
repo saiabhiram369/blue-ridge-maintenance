@@ -116,27 +116,9 @@ create table if not exists public.admin_notification_reads (
 alter table public.admin_notifications enable row level security;
 alter table public.admin_notification_reads enable row level security;
 
-do $policies$
-declare
-  p record;
-begin
-  for p in
-    select policyname
-    from pg_policies
-    where schemaname='public'
-      and tablename in ('admin_notifications','admin_notification_reads')
-  loop
-    execute format(
-      'drop policy if exists %I on public.%I',
-      p.policyname,
-      case
-        when p.policyname like '%read receipt%' then 'admin_notification_reads'
-        else 'admin_notifications'
-      end
-    );
-  end loop;
-end;
-$policies$;
+drop policy if exists "admins read notifications" on public.admin_notifications;
+drop policy if exists "admins read own notification receipts" on public.admin_notification_reads;
+drop policy if exists "admins mark own notifications read" on public.admin_notification_reads;
 
 create policy "admins read notifications"
 on public.admin_notifications
