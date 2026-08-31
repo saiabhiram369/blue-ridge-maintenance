@@ -225,7 +225,7 @@ export function SettingsPanel() {
           <Mail size={21}/>
           <div>
             <strong>Email delivery</strong>
-            <span>EmailJS is currently used for request and completion notifications.</span>
+            <span>Email delivery runs through a Supabase Edge Function; staff login remains name + PIN only.</span>
           </div>
         </div>
       </div>
@@ -289,12 +289,20 @@ export function NotificationPanel({
                 }}
               >
                 <div className="notification-icon">
-                  <CheckCircle2 size={17}/>
+                  {item.event_type === 'new_request'
+                    ? <BellRing size={17}/>
+                    : <CheckCircle2 size={17}/>}
                 </div>
                 <div>
                   <strong>{item.ticket_id} · {item.title}</strong>
                   <span>{item.message}</span>
-                  <small>{item.technician ? `Completed by ${item.technician}` : 'Ready for admin review'}</small>
+                  <small>
+                    {item.event_type === 'new_request'
+                      ? 'New request submitted'
+                      : item.technician
+                        ? `Completed by ${item.technician}`
+                        : 'Ready for admin review'}
+                  </small>
                 </div>
                 {unread && <i className="notification-unread-dot"/>}
               </button>
