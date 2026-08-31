@@ -3,7 +3,7 @@ import {
   ShieldCheck, SlidersHorizontal, UserRound, Users, Wrench
 } from 'lucide-react';
 import { useMemo } from 'react';
-import type { WorkOrder } from '../types';
+import type { AdminNotification, WorkOrder } from '../types';
 
 interface TechniciansProps {
   orders: WorkOrder[];
@@ -19,7 +19,7 @@ export function TechniciansPanel({ orders, onOpenTechnician }: TechniciansProps)
         name,
         assigned: assigned.length,
         active: assigned.filter(order => ['Open','In Progress','On Hold'].includes(order.status)).length,
-        pending: assigned.filter(order => order.status === 'Pending Tiffany').length,
+        pending: assigned.filter(order => order.status === 'Pending Admin Approval').length,
         completed: assigned.filter(order => order.status === 'Resolved').length
       };
     });
@@ -45,7 +45,7 @@ export function TechniciansPanel({ orders, onOpenTechnician }: TechniciansProps)
             </div>
             <div className="directory-stats">
               <span><b>{tech.active}</b> active</span>
-              <span><b>{tech.pending}</b> awaiting Tiffany</span>
+              <span><b>{tech.pending}</b> awaiting admin approval</span>
               <span><b>{tech.completed}</b> completed</span>
             </div>
           </button>
@@ -148,7 +148,7 @@ export function ReportsPanel({ orders }: { orders: WorkOrder[] }) {
       ['Total created', String(current.length)],
       ['Open', String(current.filter(order => order.status === 'Open').length)],
       ['In Progress', String(current.filter(order => order.status === 'In Progress').length)],
-      ['Pending Tiffany', String(current.filter(order => order.status === 'Pending Tiffany').length)],
+      ['Pending Admin Approval', String(current.filter(order => order.status === 'Pending Admin Approval').length)],
       ['Resolved', String(current.filter(order => order.status === 'Resolved').length)],
       [],
       ['Ticket ID','Location','Priority','Status','Technician','Title'],
@@ -211,14 +211,14 @@ export function SettingsPanel() {
           <CheckCircle2 size={21}/>
           <div>
             <strong>Final closure</strong>
-            <span>Only Tiffany is authorized to resolve and close work orders.</span>
+            <span>Tiffany is the primary reviewer. If she is unavailable, any authorized admin may verify and close the work order.</span>
           </div>
         </div>
         <div className="settings-card">
           <BellRing size={21}/>
           <div>
             <strong>Completion notifications</strong>
-            <span>Tiffany is notified after technician completion; requester is notified after final resolution.</span>
+            <span>All admins receive an in-app notification after technician completion; the requester is notified after final resolution.</span>
           </div>
         </div>
         <div className="settings-card">
@@ -234,21 +234,30 @@ export function SettingsPanel() {
 }
 
 interface NotificationProps {
+  notifications: AdminNotification[];
+  unreadIds: Set<string>;
   orders: WorkOrder[];
   open: boolean;
   onClose: () => void;
   onOpenOrder: (order: WorkOrder) => void;
+  onReadNotification: (notificationId: string) => void;
 }
 
-export function NotificationPanel({ orders, open, onClose, onOpenOrder }: NotificationProps) {
-  const items = [
-    ...orders
-      .filter(order => order.status === 'Pending Tiffany')
-      .map(order => ({ order, label:'Awaiting Tiffany verification', icon:'approval' as const })),
-    ...orders
-      .filter(order => !order.technician && ['Urgent','High'].includes(order.priority) && order.status !== 'Resolved')
-      .map(order => ({ order, label:'Needs technician assignment', icon:'assignment' as const }))
-  ];
+export function NotificationPanel({
+  notifications,
+  unreadIds,
+  orders,
+  open,
+  onClose,
+  onOpenOrder,
+  onReadNotification
+}: NotificationProps) {
+  const activeNotifications = notifications.filter(item => !item.closed_at);
+  const urgentUnassigned = orders.filter(order =>
+    !order.technician
+    && ['Urgent','High'].includes(order.priority)
+    && order.status !== 'Resolved'
+  );
 
   if (!open) return null;
 
@@ -258,32 +267,64 @@ export function NotificationPanel({ orders, open, onClose, onOpenOrder }: Notifi
       <aside className="notification-panel">
         <div className="notification-head">
           <div>
-            <span>ATTENTION</span>
+            <span>ADMIN APPROVAL QUEUE</span>
             <h3>Notifications</h3>
           </div>
           <button onClick={onClose}>×</button>
         </div>
 
         <div className="notification-list">
-          {items.map(({ order, label, icon }) => (
+          {activeNotifications.map(item => {
+            const order = orders.find(order => order.ticket_id === item.ticket_id);
+            const unread = unreadIds.has(item.id);
+
+            return (
+              <button
+                className={unread ? 'unread' : ''}
+                key={item.id}
+                onClick={() => {
+                  onReadNotification(item.id);
+                  if (order) onOpenOrder(order);
+                  onClose();
+                }}
+              >
+                <div className="notification-icon">
+                  <CheckCircle2 size={17}/>
+                </div>
+                <div>
+                  <strong>{item.ticket_id} · {item.title}</strong>
+                  <span>{item.message}</span>
+                  <small>{item.technician ? `Completed by ${item.technician}` : 'Ready for admin review'}</small>
+                </div>
+                {unread && <i className="notification-unread-dot"/>}
+              </button>
+            );
+          })}
+
+          {urgentUnassigned.map(order => (
             <button
-              key={icon + order.ticket_id}
+              key={'assignment-' + order.ticket_id}
               onClick={() => {
                 onOpenOrder(order);
                 onClose();
               }}
             >
-              <div className="notification-icon">
-                {icon === 'approval' ? <CheckCircle2 size={17}/> : <Wrench size={17}/>}
-              </div>
+              <div className="notification-icon"><Wrench size={17}/></div>
               <div>
                 <strong>{order.ticket_id} · {order.title}</strong>
-                <span>{label}</span>
+                <span>High-priority work order needs technician assignment.</span>
                 <small>{order.location}</small>
               </div>
             </button>
           ))}
-          {!items.length && <div className="notification-empty">Nothing needs immediate attention.</div>}
+
+          {!activeNotifications.length && !urgentUnassigned.length && (
+            <div className="notification-empty">Nothing needs immediate attention.</div>
+          )}
+        </div>
+
+        <div className="notification-footnote">
+          Tiffany is the primary reviewer. Any authorized admin may verify and close completed work if she is unavailable.
         </div>
       </aside>
     </>
