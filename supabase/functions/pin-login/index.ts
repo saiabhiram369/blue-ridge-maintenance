@@ -11,6 +11,15 @@ type Payload = {
   portal?: 'admin' | 'technician';
 };
 
+function internalEmail(staffId: string) {
+  return `pin-${staffId}@blue-ridge.invalid`;
+}
+
+function randomPassword() {
+  const bytes = crypto.getRandomValues(new Uint8Array(24));
+  return Array.from(bytes, value => value.toString(16).padStart(2,'0')).join('');
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -46,27 +55,59 @@ Deno.serve(async (req) => {
       p_pin: pin
     });
 
-    if (pinError) {
-      throw pinError;
-    }
+    if (pinError) throw pinError;
 
-    const authUserId = Array.isArray(pinRows) ? pinRows[0]?.auth_user_id : undefined;
+    const pinRow = Array.isArray(pinRows) ? pinRows[0] : undefined;
 
-    if (!authUserId) {
+    if (!pinRow?.staff_id) {
       return new Response(
         JSON.stringify({ error: 'Incorrect name or 4-digit code.' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    let authUserId = pinRow.auth_user_id as string | undefined | null;
+    let email = authUserId ? undefined : internalEmail(pinRow.staff_id);
+
+    if (!authUserId) {
+      const { data: created, error: createError } = await admin.auth.admin.createUser({
+        email,
+        password: randomPassword(),
+        email_confirm: true,
+        user_metadata: {
+          full_name: pinRow.display_name,
+          blue_ridge_role: pinRow.role,
+          staff_pin_id: pinRow.staff_id
+        }
+      });
+
+      if (createError || !created.user) {
+        throw createError || new Error('Could not create internal staff identity.');
+      }
+
+      authUserId = created.user.id;
+
+      const { error: attachError } = await admin.rpc('attach_staff_auth_identity', {
+        p_staff_id: pinRow.staff_id,
+        p_auth_user_id: authUserId
+      });
+
+      if (attachError) {
+        await admin.auth.admin.deleteUser(authUserId);
+        throw attachError;
+      }
+    }
+
     const { data: userData, error: userError } = await admin.auth.admin.getUserById(authUserId);
     if (userError || !userData.user?.email) {
-      throw userError || new Error('Authorized user account could not be found.');
+      throw userError || new Error('Authorized internal identity could not be found.');
     }
+
+    email = userData.user.email;
 
     const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
       type: 'magiclink',
-      email: userData.user.email
+      email
     });
 
     if (linkError || !linkData.properties?.hashed_token) {
