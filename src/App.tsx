@@ -15,9 +15,9 @@ import { TechnicianHero } from './components/TechnicianHero';
 import { WorkOrderInspector } from './components/WorkOrderInspector';
 import { WorkOrderQueue } from './components/WorkOrderQueue';
 import { demoOrders } from './data/demo';
-import { notifyRequesterResolved, notifyTiffanyWorkDone } from './lib/notifications';
+import { notifyRequesterResolved } from './lib/notifications';
 import { demoMode, supabase } from './lib/supabase';
-import type { Profile, WorkOrder, WorkOrderStatus } from './types';
+import type { AdminNotification, Profile, WorkOrder, WorkOrderStatus } from './types';
 
 const protectedPaths = ['/admin','/tech','/app'];
 const pathname = window.location.pathname.toLowerCase();
@@ -49,6 +49,8 @@ function OperationsApp() {
   const [facilityScope, setFacilityScope] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [adminNotifications, setAdminNotifications] = useState<AdminNotification[]>([]);
+  const [readNotificationIds, setReadNotificationIds] = useState<Set<string>>(new Set());
   const [activeSection, setActiveSection] = useState<AdminSection>(
     isTechRoute ? 'work-orders' : 'dashboard'
   );
@@ -58,8 +60,7 @@ function OperationsApp() {
   const isAdmin = profile?.role === 'admin';
   const isTechnician = profile?.role === 'technician';
   const firstName = profile?.full_name?.split(' ')[0] || 'Team';
-  const isTiffany = profile?.email?.toLowerCase() === 'tiffany@artoflivingretreat.org';
-  const canResolve = !!profile?.can_resolve && !!isAdmin && isTiffany;
+  const canResolve = !!isAdmin;
 
   const hydrateProfile = useCallback(async () => {
     if (demoMode) return;
@@ -171,11 +172,100 @@ function OperationsApp() {
     }
   }, [profile]);
 
+  const loadAdminNotifications = useCallback(async () => {
+    if (!profile || profile.role !== 'admin' || demoMode) return;
+
+    const [{ data: notifications, error: notificationError }, { data: reads, error: readsError }] = await Promise.all([
+      supabase
+        .from('admin_notifications')
+        .select('id,ticket_id,event_type,title,message,technician,created_at,closed_at')
+        .order('created_at', { ascending:false })
+        .limit(100),
+      supabase
+        .from('admin_notification_reads')
+        .select('notification_id')
+        .eq('admin_id', profile.id)
+    ]);
+
+    if (notificationError) {
+      setNotice(notificationError.message);
+      return;
+    }
+
+    if (readsError) {
+      setNotice(readsError.message);
+      return;
+    }
+
+    setAdminNotifications((notifications || []) as AdminNotification[]);
+    setReadNotificationIds(new Set((reads || []).map(item => item.notification_id as string)));
+  }, [profile]);
+
   useEffect(() => {
     if (authenticated && (demoMode || profile)) {
       loadOrders();
     }
   }, [authenticated, profile, loadOrders]);
+
+  useEffect(() => {
+    if (!authenticated || !isAdmin || !profile) return;
+
+    if (demoMode) {
+      const synthetic = orders
+        .filter(order => order.status === 'Pending Tiffany')
+        .map(order => ({
+          id: 'demo-' + order.ticket_id,
+          ticket_id: order.ticket_id,
+          event_type: 'technician_completed' as const,
+          title: 'Work ready for verification',
+          message: (order.technician || 'Technician') + ' marked this work order done.',
+          technician: order.technician || null,
+          created_at: order.updated_at || order.timestamp,
+          closed_at: null
+        }));
+      setAdminNotifications(synthetic);
+      return;
+    }
+
+    loadAdminNotifications();
+
+    const channel = supabase
+      .channel('blue-ridge-admin-notifications')
+      .on(
+        'postgres_changes',
+        { event:'*', schema:'public', table:'admin_notifications' },
+        () => loadAdminNotifications()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [authenticated, isAdmin, profile, orders, loadAdminNotifications]);
+
+  async function markNotificationRead(notificationId: string) {
+    if (!profile || !isAdmin || readNotificationIds.has(notificationId)) return;
+
+    setReadNotificationIds(current => new Set(current).add(notificationId));
+
+    if (demoMode) return;
+
+    const { error } = await supabase
+      .from('admin_notification_reads')
+      .insert({
+        notification_id: notificationId,
+        admin_id: profile.id
+      });
+
+    if (error) {
+      setReadNotificationIds(current => {
+        const next = new Set(current);
+        next.delete(notificationId);
+        return next;
+      });
+      setNotice(error.message);
+    }
+  }
 
   const filtered = useMemo(() => orders.filter(order => {
     const haystack = [
@@ -199,12 +289,19 @@ function OperationsApp() {
     complete: orders.filter(order => order.status === 'Resolved').length
   }), [orders]);
 
-  const attentionCount = useMemo(() => (
-    orders.filter(order =>
-      order.status === 'Pending Tiffany'
-      || (!order.technician && ['Urgent','High'].includes(order.priority) && order.status !== 'Resolved')
-    ).length
-  ), [orders]);
+  const attentionCount = useMemo(() => {
+    const unreadApprovalCount = adminNotifications.filter(
+      item => !item.closed_at && !readNotificationIds.has(item.id)
+    ).length;
+
+    const urgentUnassignedCount = orders.filter(order =>
+      !order.technician
+      && ['Urgent','High'].includes(order.priority)
+      && order.status !== 'Resolved'
+    ).length;
+
+    return unreadApprovalCount + urgentUnassignedCount;
+  }, [orders, adminNotifications, readNotificationIds]);
 
   function clearDrilldownFilters() {
     setSelectedDate(null);
@@ -262,11 +359,6 @@ function OperationsApp() {
     if (!selected || !isAdmin) return;
 
     const resolving = patch.status === 'Resolved' && selected.status !== 'Resolved';
-
-    if (resolving && !canResolve) {
-      setNotice('Only Tiffany can resolve and close a work order.');
-      return;
-    }
 
     const before = selected;
     const effectivePatch: Partial<WorkOrder> = resolving
@@ -385,15 +477,7 @@ function OperationsApp() {
       return;
     }
 
-    try {
-      await notifyTiffanyWorkDone(updated, profile.full_name);
-      setNotice('Work marked done. Tiffany has been notified for final verification.');
-    } catch (err) {
-      setNotice(
-        'Work marked done, but Tiffany email notification failed: '
-        + (err instanceof Error ? err.message : 'notification error')
-      );
-    }
+    setNotice('Work marked done. Tiffany and the admin team have been notified for final verification.');
   }
 
   function addInternalNote() {
@@ -485,7 +569,7 @@ function OperationsApp() {
             <option>Open</option>
             <option>In Progress</option>
             <option>On Hold</option>
-            <option>Pending Tiffany</option>
+            <option value="Pending Tiffany">Pending Admin Approval</option>
             <option>Resolved</option>
           </select>
         </label>
@@ -555,9 +639,9 @@ function OperationsApp() {
         active={status === 'In Progress'}
       />
       <KpiCard
-        label="PENDING TIFFANY"
+        label="PENDING APPROVAL"
         value={counts.pending}
-        helper={isTechnician ? 'Awaiting verification' : 'Needs final approval'}
+        helper={isTechnician ? 'Awaiting admin verification' : 'Ready for admin review'}
         icon={Timer}
         tone="gold"
         onClick={() => openStatus('Pending Tiffany')}
@@ -696,7 +780,7 @@ function OperationsApp() {
                 {attentionCount > 0 && <small>{attentionCount}</small>}
               </button>
             )}
-            <div className="admin-user-chip" title={profile?.email || ''}>
+            <div className="admin-user-chip" title={profile?.full_name || ''}>
               <span>{profile?.full_name?.split(' ').map(v => v[0]).slice(0,2).join('') || 'BR'}</span>
             </div>
           </div>
@@ -714,7 +798,7 @@ function OperationsApp() {
                 <strong>Technician workflow</strong>
                 <span>
                   You can view your assigned work orders and mark completed work as done.
-                  Tiffany performs the final verification and closes the ticket.
+                  Tiffany is the primary reviewer. If she is unavailable, another authorized admin can verify and close the ticket.
                 </span>
               </div>
             </div>
@@ -743,10 +827,17 @@ function OperationsApp() {
 
       {isAdmin && (
         <NotificationPanel
+          notifications={adminNotifications}
+          unreadIds={new Set(
+            adminNotifications
+              .filter(item => !item.closed_at && !readNotificationIds.has(item.id))
+              .map(item => item.id)
+          )}
           orders={orders}
           open={notificationsOpen}
           onClose={() => setNotificationsOpen(false)}
           onOpenOrder={openOrder}
+          onReadNotification={markNotificationRead}
         />
       )}
     </div>
