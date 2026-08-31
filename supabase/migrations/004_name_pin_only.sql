@@ -54,7 +54,7 @@ begin
 
   update public.staff_pin_directory
   set
-    pin_hash = crypt(p_pin, gen_salt('bf', 12)),
+    pin_hash = extensions.crypt(p_pin, extensions.gen_salt('bf', 12)),
     active = true,
     failed_attempts = 0,
     locked_until = null,
@@ -75,7 +75,7 @@ begin
     values (
       btrim(p_display_name),
       p_role,
-      crypt(p_pin, gen_salt('bf', 12)),
+      extensions.crypt(p_pin, extensions.gen_salt('bf', 12)),
       true,
       0,
       null,
@@ -134,7 +134,7 @@ begin
     return;
   end if;
 
-  if crypt(p_pin, row_data.pin_hash) <> row_data.pin_hash then
+  if extensions.crypt(p_pin, row_data.pin_hash) <> row_data.pin_hash then
     update public.staff_pin_directory
     set
       failed_attempts = failed_attempts + 1,
