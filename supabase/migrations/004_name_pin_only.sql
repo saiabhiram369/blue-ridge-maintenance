@@ -87,7 +87,10 @@ revoke all on function public.configure_staff_pin(text,text,text) from anon;
 revoke all on function public.configure_staff_pin(text,text,text) from authenticated;
 
 -- Verify a staff PIN. Only service_role may execute this function.
-create or replace function public.verify_staff_pin(
+-- 003 created the same signature with a smaller return shape, so drop it first.
+drop function if exists public.verify_staff_pin(text,text,text);
+
+create function public.verify_staff_pin(
   p_display_name text,
   p_role text,
   p_pin text
