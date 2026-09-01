@@ -7339,3 +7339,216 @@ button,input,select,textarea{font-family:'Noto Sans',system-ui,sans-serif}
   border-color:#DDE4EC!important;
   border-top-color:var(--request-navy)!important;
 }
+
+
+/* ===== SUCCESS SCREEN LAYOUT REPAIR =====
+   Overrides an older generic .ref-success > div rule that was forcing every
+   direct child into a 64px circle and causing the overlap seen in production. */
+.ref-success{
+  width:min(560px,calc(100vw - 32px))!important;
+  margin:clamp(34px,7vh,76px) auto!important;
+  padding:38px 42px 34px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  overflow:visible!important;
+  border-radius:22px!important;
+  background:rgba(255,255,255,.97)!important;
+  box-shadow:0 24px 70px rgba(16,35,63,.16)!important;
+  text-align:center!important;
+}
+
+/* Reset the old generic direct-child circle styling. */
+.ref-success>div{
+  width:auto!important;
+  height:auto!important;
+  margin:0!important;
+  display:block!important;
+  place-items:initial!important;
+  border-radius:0!important;
+  color:inherit!important;
+  background:transparent!important;
+}
+
+.ref-success .ref-success-brand{
+  width:100%!important;
+  margin:0 0 18px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.ref-success-brand>strong{
+  margin:0!important;
+  color:#10233F!important;
+  font-family:'Noto Sans',system-ui,sans-serif!important;
+  font-size:20px!important;
+  font-weight:800!important;
+  line-height:1.05!important;
+  letter-spacing:.03em!important;
+  text-transform:uppercase!important;
+}
+.ref-success-brand small{
+  margin-top:5px!important;
+  color:#667381!important;
+  font-size:7px!important;
+  font-weight:700!important;
+  line-height:1.2!important;
+  letter-spacing:.12em!important;
+  text-transform:uppercase!important;
+}
+
+.ref-success .ref-success-check{
+  width:62px!important;
+  height:62px!important;
+  margin:0 auto 18px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid #D6E5D5!important;
+  border-radius:50%!important;
+  color:#3F6E48!important;
+  background:#EEF7EE!important;
+}
+.ref-success>span{
+  display:block!important;
+  margin:0 0 8px!important;
+  color:#5D7D62!important;
+  font:700 8px/1 'Noto Sans',system-ui,sans-serif!important;
+  letter-spacing:.18em!important;
+}
+.ref-success h1{
+  margin:0 0 10px!important;
+  color:#10233F!important;
+  font-family:'Bellefair',Georgia,serif!important;
+  font-size:48px!important;
+  font-weight:400!important;
+  line-height:1!important;
+}
+.ref-success p{
+  margin:0!important;
+  color:#697581!important;
+  font-size:11px!important;
+  line-height:1.5!important;
+}
+
+.ref-success .ref-success-warning{
+  width:100%!important;
+  margin:18px 0 0!important;
+  padding:12px 14px!important;
+  display:block!important;
+  color:#9A5148!important;
+  border:1px solid #EBCFCB!important;
+  border-radius:10px!important;
+  background:#FFF5F3!important;
+  font:600 10px/1.45 'Noto Sans',system-ui,sans-serif!important;
+  text-align:left!important;
+}
+
+.ref-success .ref-ticket-id{
+  margin:18px 0 16px!important;
+  padding:9px 15px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  color:#315A39!important;
+  border:1px solid #D6E4D3!important;
+  border-radius:9px!important;
+  background:#F0F7EE!important;
+  font:700 13px/1 'Noto Sans',system-ui,sans-serif!important;
+  letter-spacing:.04em!important;
+}
+
+.ref-success .ref-success-summary{
+  width:100%!important;
+  margin:0!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+  text-align:left!important;
+}
+.ref-success .ref-success-summary>div{
+  width:auto!important;
+  min-width:0!important;
+  min-height:70px!important;
+  padding:13px 14px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  border:1px solid #E2E7EC!important;
+  border-radius:10px!important;
+  background:#FBFCFD!important;
+}
+.ref-success-summary small{
+  margin:0 0 5px!important;
+  color:#8A949E!important;
+  font:700 7px/1 'Noto Sans',system-ui,sans-serif!important;
+  letter-spacing:.10em!important;
+  text-transform:uppercase!important;
+}
+.ref-success-summary strong{
+  margin:0!important;
+  color:#263746!important;
+  font:700 11px/1.3 'Noto Sans',system-ui,sans-serif!important;
+  overflow-wrap:anywhere!important;
+}
+
+.ref-success .ref-success-status{
+  width:100%!important;
+  min-height:42px!important;
+  margin:12px 0 0!important;
+  padding:10px 12px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  color:#5C6B62!important;
+  border:1px solid #DFE8DD!important;
+  border-radius:9px!important;
+  background:#F3F8F1!important;
+  font:600 9px/1.35 'Noto Sans',system-ui,sans-serif!important;
+}
+.ref-success-status i{
+  width:7px!important;
+  height:7px!important;
+  flex:0 0 auto!important;
+  border-radius:50%!important;
+  background:#4EA35D!important;
+}
+
+.ref-success>button{
+  width:100%!important;
+  max-width:280px!important;
+  min-height:46px!important;
+  margin:20px auto 0!important;
+  padding:0 18px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  color:#fff!important;
+  border:0!important;
+  border-radius:8px!important;
+  background:#082E67!important;
+  box-shadow:0 8px 18px rgba(8,46,103,.16)!important;
+  font:700 11px/1 'Noto Sans',system-ui,sans-serif!important;
+}
+
+@media(max-width:620px){
+  .ref-page:has(.ref-success){
+    padding:18px!important;
+    background:
+      linear-gradient(rgba(248,250,252,.36),rgba(248,250,252,.52)),
+      url('/blue-ridge-campus-wallpaper.webp') center/cover fixed no-repeat!important;
+  }
+  .ref-success{
+    width:100%!important;
+    margin:20px auto!important;
+    padding:30px 20px 26px!important;
+  }
+  .ref-success h1{font-size:42px!important}
+  .ref-success .ref-success-summary{
+    grid-template-columns:1fr 1fr!important;
+  }
+  .ref-success .ref-success-summary>div{
+    min-height:66px!important;
+  }
+}
