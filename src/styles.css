@@ -6990,9 +6990,17 @@ button,input,select,textarea{font-family:'Noto Sans',system-ui,sans-serif}
   margin-top:7px!important;
   padding:0 11px!important;
 }
-.ref-field svg{color:#728870!important}
+.ref-field svg{
+  position:static!important;
+  left:auto!important;
+  top:auto!important;
+  transform:none!important;
+  flex:0 0 auto!important;
+  color:#728870!important;
+}
 .ref-field input{
   width:100%!important;
+  min-width:0!important;
   border:0!important;
   margin:0!important;
   padding:12px 0!important;
