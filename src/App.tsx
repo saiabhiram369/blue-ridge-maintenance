@@ -2,7 +2,7 @@ import {
   Bell, CalendarDays, CheckCircle2, ClipboardCheck, RefreshCw,
   Search, SlidersHorizontal, Timer, X
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AdminInsights } from './components/AdminInsights';
 import {
   FacilitiesPanel, NotificationPanel, ReportsPanel, SettingsPanel, TechniciansPanel
@@ -56,6 +56,87 @@ function OperationsApp() {
   );
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const ordersRef = useRef<WorkOrder[]>([]);
+
+  useEffect(() => {
+    ordersRef.current = orders;
+  }, [orders]);
+
+  const ensureAudioReady = useCallback(async () => {
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new AudioContext();
+      }
+
+      if (audioContextRef.current.state === 'suspended') {
+        await audioContextRef.current.resume();
+      }
+
+      return audioContextRef.current;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const playNotificationChime = useCallback(async (
+    kind: 'new_request' | 'assignment' | 'completion'
+  ) => {
+    const context = await ensureAudioReady();
+    if (!context || context.state !== 'running') return;
+
+    const patterns = {
+      new_request: [
+        { frequency: 659.25, delay: 0 },
+        { frequency: 783.99, delay: 0.14 }
+      ],
+      assignment: [
+        { frequency: 659.25, delay: 0 },
+        { frequency: 880, delay: 0.14 }
+      ],
+      completion: [
+        { frequency: 783.99, delay: 0 },
+        { frequency: 987.77, delay: 0.13 },
+        { frequency: 1174.66, delay: 0.26 }
+      ]
+    } as const;
+
+    const now = context.currentTime;
+
+    patterns[kind].forEach(({ frequency, delay }) => {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      const start = now + delay;
+      const stop = start + 0.18;
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(frequency, start);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.16, start + 0.018);
+      gain.gain.exponentialRampToValueAtTime(0.0001, stop);
+
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start(start);
+      oscillator.stop(stop + 0.02);
+    });
+  }, [ensureAudioReady]);
+
+  useEffect(() => {
+    // Browsers require one user gesture before programmatic audio is allowed.
+    // The login click/tap normally unlocks sound for the rest of the session.
+    const unlock = () => {
+      void ensureAudioReady();
+    };
+
+    window.addEventListener('pointerdown', unlock, { once:true });
+    window.addEventListener('keydown', unlock, { once:true });
+
+    return () => {
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
+  }, [ensureAudioReady]);
 
   const isAdmin = profile?.role === 'admin';
   const isTechnician = profile?.role === 'technician';
@@ -234,14 +315,65 @@ function OperationsApp() {
       .on(
         'postgres_changes',
         { event:'*', schema:'public', table:'admin_notifications' },
-        () => loadAdminNotifications()
+        payload => {
+          if (payload.eventType === 'INSERT') {
+            const incoming = payload.new as Partial<AdminNotification>;
+
+            if (incoming.event_type === 'technician_completed') {
+              void playNotificationChime('completion');
+            } else if (incoming.event_type === 'new_request') {
+              void playNotificationChime('new_request');
+            }
+          }
+
+          void loadAdminNotifications();
+        }
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [authenticated, isAdmin, profile, orders, loadAdminNotifications]);
+  }, [authenticated, isAdmin, profile, orders, loadAdminNotifications, playNotificationChime]);
+
+  useEffect(() => {
+    if (!authenticated || !profile || demoMode) return;
+
+    const channel = supabase
+      .channel('blue-ridge-assignment-' + profile.id)
+      .on(
+        'postgres_changes',
+        { event:'UPDATE', schema:'public', table:'maintenance_requests' },
+        payload => {
+          const next = payload.new as WorkOrder;
+          if (!next?.ticket_id) return;
+
+          const previous = ordersRef.current.find(
+            order => order.ticket_id === next.ticket_id
+          );
+
+          const newlyAssignedToMe =
+            next.technician === profile.full_name
+            && previous?.technician !== profile.full_name;
+
+          if (newlyAssignedToMe) {
+            setNotice(next.ticket_id + ' was assigned to you.');
+            void playNotificationChime('assignment');
+          }
+
+          // Technicians need newly assigned jobs pulled into their filtered queue.
+          // Admins already have the order, but reloading keeps assignment state current.
+          if (profile.role === 'technician' || previous) {
+            void loadOrders();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [authenticated, profile, loadOrders, playNotificationChime]);
 
   async function markNotificationRead(notificationId: string) {
     if (!profile || !isAdmin || readNotificationIds.has(notificationId)) return;
