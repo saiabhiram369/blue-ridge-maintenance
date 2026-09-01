@@ -1,6 +1,6 @@
 import {
   BarChart3, Building2, ClipboardList, FileText, LayoutDashboard,
-  LogOut, Menu, Mountain, Settings, Users, X
+  LogOut, Menu, Settings, Users, X
 } from 'lucide-react';
 import type { Profile } from '../types';
 
@@ -48,8 +48,7 @@ export function Sidebar({
       </button>
 
       <aside className={`sidebar admin-sidebar ${mobileOpen ? 'open' : ''}`}>
-        <div className="admin-brand">
-          <span className="admin-brand-icon"><Mountain size={24} /></span>
+        <div className="admin-brand admin-brand-text">
           <div>
             <strong>Blue Ridge</strong>
             <small>Preservation Maintenance</small>
@@ -72,10 +71,6 @@ export function Sidebar({
             </button>
           ))}
         </nav>
-
-        <div className="admin-sidebar-mountain" aria-hidden="true">
-          <span/><span/><span/>
-        </div>
 
         <div className="sidebar-user admin-sidebar-user">
           <div className="avatar avatar-fallback">{profile?.full_name?.slice(0, 1) || 'T'}</div>
