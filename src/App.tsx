@@ -771,7 +771,7 @@ function OperationsApp() {
 
       <main className="workspace admin-workspace">
         <header className="admin-dashboard-header">
-          <img className="admin-campus-photo" src="https://theartoflivingretreatcenter.kinsta.cloud/wp-content/uploads/img_come_enjoy_our_beautiful_campus_r1_1_1x.webp" alt="" aria-hidden="true"/>
+          <img className="admin-campus-photo" src="/blue-ridge-campus-wallpaper.webp" alt="" aria-hidden="true"/>
           <div className="admin-campus-photo-wash" aria-hidden="true"/>
           <div className="admin-hero-copy">
             <span className="admin-greeting">{greeting}, {firstName}</span>
