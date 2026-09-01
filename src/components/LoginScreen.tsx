@@ -1,4 +1,4 @@
-import { KeyRound, LockKeyhole, Mountain, ShieldCheck, UserRound } from 'lucide-react';
+import { KeyRound, LockKeyhole, ShieldCheck, UserRound } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
@@ -62,9 +62,8 @@ export function LoginScreen({ onAuthenticated }: Props) {
   return (
     <main className="auth-shell pin-auth-shell">
       <section className="auth-card glass pin-auth-card">
-        <div className="auth-brand">
-          <Mountain size={25}/>
-          <span>BLUE RIDGE<small>PRESERVATION MAINTENANCE</small></span>
+        <div className="auth-brand auth-brand-text">
+          <span><strong>Blue Ridge</strong><small>Preservation Maintenance</small></span>
         </div>
 
         <div className="auth-icon"><LockKeyhole size={24}/></div>
