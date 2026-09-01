@@ -6565,3 +6565,108 @@ button,input,select,textarea{font-family:'Noto Sans',system-ui,sans-serif}
     background:linear-gradient(90deg,rgba(248,248,245,.96),rgba(248,248,245,.74) 62%,rgba(248,248,245,.15));
   }
 }
+
+
+/* Crisp campus-photo correction — preserve detail instead of washing out the whole image. */
+.ref-campus-photo,
+.admin-campus-photo,
+.tech-campus-photo{
+  filter:none!important;
+  opacity:1!important;
+  image-rendering:auto!important;
+  transform:none!important;
+  object-fit:cover!important;
+  object-position:center!important;
+}
+
+.ref-campus-photo-wash{
+  background:linear-gradient(
+    90deg,
+    rgba(248,248,245,.56) 0%,
+    rgba(248,248,245,.26) 22%,
+    rgba(248,248,245,.06) 43%,
+    rgba(248,248,245,0) 58%
+  )!important;
+}
+.admin-campus-photo-wash{
+  background:linear-gradient(
+    90deg,
+    rgba(248,248,245,.50) 0%,
+    rgba(248,248,245,.20) 25%,
+    rgba(248,248,245,.04) 48%,
+    rgba(248,248,245,0) 62%
+  )!important;
+}
+.tech-campus-photo-wash{
+  background:linear-gradient(
+    90deg,
+    rgba(248,248,245,.48) 0%,
+    rgba(248,248,245,.18) 28%,
+    rgba(248,248,245,.04) 50%,
+    rgba(248,248,245,0) 64%
+  )!important;
+}
+
+/* Keep copy readable without softening the photograph. */
+.ref-hero-copy{
+  max-width:440px!important;
+  padding:22px 24px!important;
+  border:1px solid rgba(255,255,255,.74)!important;
+  border-radius:17px!important;
+  background:rgba(255,255,255,.84)!important;
+  box-shadow:0 12px 30px rgba(35,45,40,.09)!important;
+}
+.admin-hero-copy{
+  max-width:510px!important;
+  padding:20px 22px!important;
+  border:1px solid rgba(255,255,255,.72)!important;
+  border-radius:16px!important;
+  background:rgba(255,255,255,.82)!important;
+  box-shadow:0 10px 26px rgba(35,45,40,.08)!important;
+}
+.tech-3d-copy{
+  max-width:610px!important;
+  padding:22px 24px!important;
+  border:1px solid rgba(255,255,255,.72)!important;
+  border-radius:16px!important;
+  background:rgba(255,255,255,.82)!important;
+  box-shadow:0 10px 26px rgba(35,45,40,.08)!important;
+}
+
+/* Make the photo area visually stronger. */
+.ref-request-hero{
+  background:#fff!important;
+}
+.admin-dashboard-header,
+.tech-3d-hero{
+  background:#fff!important;
+}
+
+@media (max-width:900px){
+  .ref-campus-photo-wash{
+    background:linear-gradient(
+      90deg,
+      rgba(248,248,245,.38),
+      rgba(248,248,245,.12) 48%,
+      rgba(248,248,245,0) 72%
+    )!important;
+  }
+  .ref-hero-copy{
+    background:rgba(255,255,255,.88)!important;
+  }
+}
+@media (max-width:680px){
+  .admin-campus-photo-wash,
+  .tech-campus-photo-wash{
+    background:linear-gradient(
+      90deg,
+      rgba(248,248,245,.34),
+      rgba(248,248,245,.10) 56%,
+      rgba(248,248,245,0) 78%
+    )!important;
+  }
+  .admin-hero-copy,
+  .tech-3d-copy{
+    background:rgba(255,255,255,.88)!important;
+  }
+}
