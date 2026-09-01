@@ -6492,3 +6492,76 @@ button,input,select,textarea{font-family:'Noto Sans',system-ui,sans-serif}
   }
   .tech-3d-copy h2{font-size:36px!important}
 }
+
+
+/* Direct campus images: keep imagery visible and independent of CSS background loading. */
+.ref-request-hero{
+  background:#F8F8F5!important;
+}
+.ref-campus-photo,
+.admin-campus-photo,
+.tech-campus-photo{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+  z-index:0;
+}
+.ref-campus-photo-wash,
+.admin-campus-photo-wash,
+.tech-campus-photo-wash{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:1;
+}
+.ref-campus-photo-wash{
+  background:linear-gradient(90deg,rgba(248,248,245,.98) 0%,rgba(248,248,245,.86) 24%,rgba(248,248,245,.25) 58%,rgba(248,248,245,.06) 100%);
+}
+.ref-hero-copy,
+.ref-hero-help{
+  position:relative;
+  z-index:2;
+}
+
+.admin-dashboard-header{
+  position:relative!important;
+  overflow:hidden!important;
+  background:#F8F8F5!important;
+}
+.admin-campus-photo-wash{
+  background:linear-gradient(90deg,rgba(248,248,245,.98) 0%,rgba(248,248,245,.86) 28%,rgba(248,248,245,.25) 62%,rgba(248,248,245,.06) 100%);
+}
+.admin-hero-copy,
+.admin-header-actions{
+  position:relative;
+  z-index:2;
+}
+
+.tech-3d-hero{
+  position:relative!important;
+  overflow:hidden!important;
+  background:#F8F8F5!important;
+}
+.tech-campus-photo-wash{
+  background:linear-gradient(90deg,rgba(248,248,245,.98) 0%,rgba(248,248,245,.86) 31%,rgba(248,248,245,.28) 64%,rgba(248,248,245,.07) 100%);
+}
+.tech-3d-copy{
+  position:relative!important;
+  z-index:2!important;
+}
+
+@media (max-width:900px){
+  .ref-campus-photo-wash{
+    background:linear-gradient(90deg,rgba(248,248,245,.96),rgba(248,248,245,.60) 52%,rgba(248,248,245,.12));
+  }
+}
+@media (max-width:680px){
+  .admin-campus-photo-wash,
+  .tech-campus-photo-wash{
+    background:linear-gradient(90deg,rgba(248,248,245,.96),rgba(248,248,245,.74) 62%,rgba(248,248,245,.15));
+  }
+}
