@@ -549,7 +549,7 @@ function OperationsApp() {
       : 'Good evening';
 
   const sectionTitles: Record<AdminSection, string> = {
-    dashboard:'Facilities Operations',
+    dashboard:'Admin Panel',
     'work-orders':isTechnician ? 'My Assigned Work Orders' : 'Work Orders',
     technicians:'Technicians',
     facilities:'Facilities',
@@ -771,9 +771,10 @@ function OperationsApp() {
 
       <main className="workspace admin-workspace">
         <header className="admin-dashboard-header">
-          <div>
-            <h1>{greeting}, {firstName}</h1>
-            <p>{sectionTitles[activeSection]}</p>
+          <div className="admin-hero-copy">
+            <span className="admin-greeting">{greeting}, {firstName}</span>
+            <h1>{sectionTitles[activeSection]}</h1>
+            <p>{isTechnician ? 'Your assigned work and maintenance activity.' : 'Your command center for campus maintenance operations.'}</p>
           </div>
 
           <div className="admin-header-actions">
