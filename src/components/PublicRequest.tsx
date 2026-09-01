@@ -1,6 +1,6 @@
 import {
   Camera, CheckCircle2, ChevronRight, ClipboardList, Mail, MapPin,
-  Phone, ShieldCheck, Sparkles, UserRound
+  Menu, Phone, ShieldCheck, Sparkles, UserRound
 } from 'lucide-react';
 import { useState } from 'react';
 import { demoMode, supabase } from '../lib/supabase';
@@ -84,12 +84,16 @@ export function PublicRequest(){
 
     <header className="ref-desktop-header">
       <div className="ref-header-brand ref-text-brand"><strong>Blue Ridge</strong><small>Preservation Maintenance</small></div>
-      <div className="ref-header-secure"><ShieldCheck size={13}/>Secure facility services</div>
+      <nav className="ref-public-nav" aria-label="Public request navigation">
+        <a className="active" href="#maintenance-request-form">Submit Request</a>
+        <a href="https://artoflivingretreatcenter.org/contact/" target="_blank" rel="noreferrer">Contact Us</a>
+        <a className="ref-tech-login-link" href="/tech"><UserRound size={14}/>Technician Login</a>
+      </nav>
     </header>
 
     <header className="ref-mobile-header">
       <div className="ref-mobile-brand ref-text-brand"><strong>Blue Ridge</strong><small>Preservation Maintenance</small></div>
-      <div className="ref-mobile-secure"><ShieldCheck size={12}/>Secure</div>
+      <div className="ref-mobile-menu" aria-hidden="true"><Menu size={22}/></div>
     </header>
 
     <div className="ref-request-stage">
@@ -99,32 +103,34 @@ export function PublicRequest(){
         <div className="ref-hero-copy">
           <span>BLUE RIDGE PRESERVATION MAINTENANCE</span>
           <h1>Care for Our<br/>Sacred Space</h1>
+          <div className="ref-hero-rule"><i/></div>
           <p>Submit a maintenance request and help us keep our campus beautiful, safe, and welcoming.</p>
-          <div className="ref-hero-rule"><i/><b/></div>
-        </div>
-        <div className="ref-hero-help">
-          <div><Sparkles size={18}/></div>
-          <strong>We’re here to help</strong>
-          <span>Our team will review your request and respond promptly.</span>
+          <button
+            className="ref-mobile-start"
+            type="button"
+            onClick={()=>document.getElementById('maintenance-request-form')?.scrollIntoView({behavior:'smooth',block:'start'})}
+          >
+            <span>Start a request</span><ChevronRight size={18}/>
+          </button>
         </div>
       </section>
 
-      <form className="ref-card" onSubmit={submit}>
+      <form id="maintenance-request-form" className="ref-card" onSubmit={submit}>
       <div className="ref-card-intro">
         <div>
           <span className="ref-kicker">MAINTENANCE REQUEST</span>
           <h1>New Maintenance Request</h1>
-          <p>Please provide the details of the issue. We’ll route it to the appropriate maintenance team.</p>
+          <p>Please provide the details of the issue.<br/>We’ll route it to the appropriate maintenance team.</p>
         </div>
-        <div className="ref-step"><strong>01</strong><small>request</small></div>
+        <div className="ref-request-pill">request</div>
       </div>
 
       <div className="ref-progress-rail" aria-hidden="true">
-        <span className="active">Your details</span>
-        <span className="active">Issue</span>
-        <span className="active">Location</span>
-        <span className="active">Photos</span>
-        <span className="active">Review</span>
+        {['Your details','Issue','Location','Photos','Review'].map((label,index)=>
+          <span key={label} className={index===0?'active':''}>
+            <b>{index+1}</b><small>{label}</small>
+          </span>
+        )}
       </div>
 
       <section className="ref-section">
@@ -139,11 +145,11 @@ export function PublicRequest(){
       <section className="ref-section">
         <div className="ref-section-title"><span><ClipboardList size={17}/></span><strong>REQUEST DETAILS</strong></div>
         <div className="ref-grid two">
-          <label>Category<select required value={form.category} onChange={e=>set('category',e.target.value)}><option value="">Select service category</option>{categories.map(c=><option key={c}>{c}</option>)}</select></label>
-          <label>Location<div className="ref-field"><MapPin size={15}/><input required value={form.location} onChange={e=>set('location',e.target.value)} placeholder="New River 111"/></div></label>
+          <label>Category <b className="required-mark">*</b><select required value={form.category} onChange={e=>set('category',e.target.value)}><option value="">Select service category</option>{categories.map(c=><option key={c}>{c}</option>)}</select></label>
+          <label>Location <b className="required-mark">*</b><div className="ref-field"><MapPin size={15}/><input required value={form.location} onChange={e=>set('location',e.target.value)} placeholder="New River 111"/></div></label>
         </div>
-        <label>Issue title<input required value={form.title} onChange={e=>set('title',e.target.value)} placeholder="Describe the issue in a few words"/></label>
-        <label>Description<textarea required value={form.description} onChange={e=>set('description',e.target.value)} placeholder="What happened? When did it start? Is anyone impacted?"/></label>
+        <label>Issue title <b className="required-mark">*</b><input required value={form.title} onChange={e=>set('title',e.target.value)} placeholder="Describe the issue in a few words"/></label>
+        <label>Description <b className="required-mark">*</b><textarea required value={form.description} onChange={e=>set('description',e.target.value)} placeholder="What happened? When did it start? Is anyone impacted?"/></label>
       </section>
 
       <div className="ref-bottom-grid">
