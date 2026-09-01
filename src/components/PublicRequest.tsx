@@ -94,7 +94,7 @@ export function PublicRequest(){
 
     <div className="ref-request-stage">
       <section className="ref-request-hero" aria-label="Blue Ridge campus">
-        <img className="ref-campus-photo" src="https://theartoflivingretreatcenter.kinsta.cloud/wp-content/uploads/img_come_enjoy_our_beautiful_campus_r1_1_1x.webp" alt="Art of Living Retreat Center campus in the Blue Ridge Mountains"/>
+        <img className="ref-campus-photo" src="/blue-ridge-campus-wallpaper.webp" alt="Art of Living Retreat Center campus in the Blue Ridge Mountains"/>
         <div className="ref-campus-photo-wash" aria-hidden="true"/>
         <div className="ref-hero-copy">
           <span>BLUE RIDGE PRESERVATION MAINTENANCE</span>
