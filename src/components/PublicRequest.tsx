@@ -1,5 +1,5 @@
 import {
-  Camera, CheckCircle2, ChevronRight, ClipboardList, Mail, MapPin, Mountain,
+  Camera, CheckCircle2, ChevronRight, ClipboardList, Mail, MapPin,
   Phone, ShieldCheck, Sparkles, UserRound
 } from 'lucide-react';
 import { useState } from 'react';
@@ -60,26 +60,35 @@ export function PublicRequest(){
   }
 
   if(ticket) return <main className="ref-page">
-    <div className="ref-mountains" aria-hidden="true"><i/><i/><i/></div>
     <section className="ref-success">
-      <div><CheckCircle2 size={30}/></div><span>REQUEST RECEIVED</span><h1>Thank you.</h1>
+      <div className="ref-success-brand"><strong>Blue Ridge</strong><small>Preservation Maintenance</small></div>
+      <div className="ref-success-check"><CheckCircle2 size={30}/></div>
+      <span>REQUEST RECEIVED</span><h1>Thank you.</h1>
       <p>Your maintenance request has been created successfully.</p>
       {notificationWarning && <div className="ref-error">{notificationWarning}</div>}
-      <strong>{ticket}</strong>
+      <strong className="ref-ticket-id">{ticket}</strong>
+      <div className="ref-success-summary">
+        <div><small>Location</small><strong>{form.location}</strong></div>
+        <div><small>Category</small><strong>{form.category}</strong></div>
+        <div><small>Priority</small><strong>{form.priority}</strong></div>
+        <div><small>Status</small><strong>Open</strong></div>
+      </div>
+      <div className="ref-success-status">
+        <i/>{notificationWarning ? 'Request saved · notification delivery pending' : 'Maintenance team notified'}
+      </div>
       <button onClick={()=>{setTicket('');setForm(emptyForm);setFiles([])}}>Submit another request</button>
     </section>
   </main>;
 
   return <main className="ref-page">
-    <div className="ref-mountains" aria-hidden="true"><i/><i/><i/></div>
 
     <header className="ref-desktop-header">
-      <div className="ref-header-brand"><Mountain size={34}/><strong>Blue Ridge Preservation Maintenance</strong></div>
+      <div className="ref-header-brand ref-text-brand"><strong>Blue Ridge</strong><small>Preservation Maintenance</small></div>
       <div className="ref-header-secure"><ShieldCheck size={13}/>Secure facility services</div>
     </header>
 
     <header className="ref-mobile-header">
-      <div className="ref-mobile-brand"><Mountain size={25}/><strong>Blue Ridge Preservation Maintenance</strong></div>
+      <div className="ref-mobile-brand ref-text-brand"><strong>Blue Ridge</strong><small>Preservation Maintenance</small></div>
       <div className="ref-mobile-secure"><ShieldCheck size={12}/>Secure</div>
     </header>
 
@@ -90,7 +99,15 @@ export function PublicRequest(){
           <h1>How can we help?</h1>
           <p>Tell us what needs attention. We’ll route your request to the right team and keep you updated.</p>
         </div>
-        <div className="ref-step"><strong>01</strong><small>of 01</small></div>
+        <div className="ref-step"><strong>01</strong><small>request</small></div>
+      </div>
+
+      <div className="ref-progress-rail" aria-hidden="true">
+        <span className="active">Your details</span>
+        <span className="active">Issue</span>
+        <span className="active">Location</span>
+        <span className="active">Photos</span>
+        <span className="active">Review</span>
       </div>
 
       <section className="ref-section">
