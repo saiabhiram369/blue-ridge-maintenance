@@ -92,12 +92,27 @@ export function PublicRequest(){
       <div className="ref-mobile-secure"><ShieldCheck size={12}/>Secure</div>
     </header>
 
-    <form className="ref-card" onSubmit={submit}>
+    <div className="ref-request-stage">
+      <section className="ref-request-hero" aria-label="Blue Ridge campus">
+        <div className="ref-hero-copy">
+          <span>BLUE RIDGE PRESERVATION MAINTENANCE</span>
+          <h1>Care for Our<br/>Sacred Space</h1>
+          <p>Submit a maintenance request and help us keep our campus beautiful, safe, and welcoming.</p>
+          <div className="ref-hero-rule"><i/><b/></div>
+        </div>
+        <div className="ref-hero-help">
+          <div><Sparkles size={18}/></div>
+          <strong>We’re here to help</strong>
+          <span>Our team will review your request and respond promptly.</span>
+        </div>
+      </section>
+
+      <form className="ref-card" onSubmit={submit}>
       <div className="ref-card-intro">
         <div>
-          <span className="ref-kicker">NEW MAINTENANCE REQUEST</span>
-          <h1>How can we help?</h1>
-          <p>Tell us what needs attention. We’ll route your request to the right team and keep you updated.</p>
+          <span className="ref-kicker">MAINTENANCE REQUEST</span>
+          <h1>New Maintenance Request</h1>
+          <p>Please provide the details of the issue. We’ll route it to the appropriate maintenance team.</p>
         </div>
         <div className="ref-step"><strong>01</strong><small>request</small></div>
       </div>
@@ -143,6 +158,7 @@ export function PublicRequest(){
       {error&&<div className="ref-error">{error}</div>}
       <button className="ref-submit" disabled={busy}><span>{busy?'Submitting…':'Submit maintenance request'}</span><ChevronRight size={18}/></button>
       <div className="ref-privacy"><ShieldCheck size={12}/>Your request is securely recorded and visible only to authorized facilities staff.</div>
-    </form>
+      </form>
+    </div>
   </main>;
 }
