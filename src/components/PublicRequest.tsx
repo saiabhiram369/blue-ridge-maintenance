@@ -65,7 +65,7 @@ export function PublicRequest(){
       <div className="ref-success-check"><CheckCircle2 size={30}/></div>
       <span>REQUEST RECEIVED</span><h1>Thank you.</h1>
       <p>Your maintenance request has been created successfully.</p>
-      {notificationWarning && <div className="ref-error">{notificationWarning}</div>}
+      {notificationWarning && <div className="ref-success-warning" role="alert">{notificationWarning}</div>}
       <strong className="ref-ticket-id">{ticket}</strong>
       <div className="ref-success-summary">
         <div><small>Location</small><strong>{form.location}</strong></div>
