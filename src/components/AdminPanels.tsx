@@ -12,7 +12,7 @@ interface TechniciansProps {
 
 export function TechniciansPanel({ orders, onOpenTechnician }: TechniciansProps) {
   const technicians = useMemo(() => {
-    const names = Array.from(new Set(orders.map(order => order.technician).filter(Boolean))) as string[];
+    const names = ['Abhiram','Ethan','Eric'];
     return names.map(name => {
       const assigned = orders.filter(order => order.technician === name);
       return {
@@ -31,7 +31,7 @@ export function TechniciansPanel({ orders, onOpenTechnician }: TechniciansProps)
         <div>
           <span><Users size={15}/> TEAM</span>
           <h2>Technicians</h2>
-          <p>Current assignments and completion status by technician.</p>
+          <p>Current assignments and completion status. Abhiram has both admin and technician capability.</p>
         </div>
       </div>
 
