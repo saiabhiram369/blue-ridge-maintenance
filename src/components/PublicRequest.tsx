@@ -37,8 +37,9 @@ export function PublicRequest(){
           const {data}=supabase.storage.from('maintenance-photos').getPublicUrl(path);
           photoUrls.push(data.publicUrl);
         }
+        const createdAt=new Date().toISOString();
         const {error:insertError}=await supabase.from('maintenance_requests').insert({
-          ticket_id:ticketId,timestamp:new Date().toISOString(),name:form.name,email:form.email,
+          ticket_id:ticketId,timestamp:createdAt,name:form.name,email:form.email,
           phone:form.phone||null,category:form.category,location:form.location,title:form.title,
           description:form.description,priority:form.priority,original_priority:form.priority,
           priority_overridden:false,status:'Open',photos:photoUrls,tech_note_seen:true,tech_marked_done:false
@@ -46,7 +47,20 @@ export function PublicRequest(){
         if(insertError) throw insertError;
 
         try {
-          await notifyAdminsNewRequest(ticketId);
+          await notifyAdminsNewRequest({
+            ticket_id:ticketId,
+            title:form.title,
+            description:form.description,
+            category:form.category,
+            location:form.location,
+            priority:form.priority,
+            status:'Open',
+            name:form.name,
+            email:form.email,
+            phone:form.phone||null,
+            timestamp:createdAt,
+            photos:photoUrls
+          });
         } catch (emailError) {
           setNotificationWarning(
             'Your request was saved, but the admin email notification could not be delivered yet.'
