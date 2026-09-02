@@ -94,10 +94,9 @@ export function WorkOrderInspector({
                 onChange={e => onTechnicianChange(e.target.value)}
               >
                 <option value="">Unassigned</option>
+                <option>Abhiram</option>
                 <option>Ethan</option>
                 <option>Eric</option>
-                <option>Marcus Hill</option>
-                <option>Other</option>
               </select>
             </div>
           ) : (
