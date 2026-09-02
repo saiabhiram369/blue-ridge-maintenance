@@ -140,6 +140,8 @@ function OperationsApp() {
 
   const isAdmin = profile?.role === 'admin';
   const isTechnician = profile?.role === 'technician';
+  const isDualRoleTechnician = profile?.full_name === 'Abhiram';
+  const canPerformTechnicianWork = !!profile && (isTechnician || isDualRoleTechnician);
   const firstName = profile?.full_name?.split(' ')[0] || 'Team';
   const canResolve = !!isAdmin;
 
@@ -542,7 +544,7 @@ function OperationsApp() {
   }
 
   async function markWorkDone() {
-    if (!selected || !isTechnician || !profile?.full_name) return;
+    if (!selected || !canPerformTechnicianWork || !profile?.full_name) return;
 
     if (selected.technician !== profile.full_name) {
       setNotice('You can only update work orders assigned to you.');
@@ -831,7 +833,7 @@ function OperationsApp() {
                 onAddInternalNote={addInternalNote}
                 onMarkWorkDone={markWorkDone}
                 isAdmin={true}
-                isTechnician={false}
+                isTechnician={isDualRoleTechnician && selected?.technician === profile?.full_name}
                 canResolve={canResolve}
               />
             </section>
@@ -857,7 +859,7 @@ function OperationsApp() {
                 onAddInternalNote={addInternalNote}
                 onMarkWorkDone={markWorkDone}
                 isAdmin={true}
-                isTechnician={false}
+                isTechnician={isDualRoleTechnician && selected?.technician === profile?.full_name}
                 canResolve={canResolve}
               />
             </section>
