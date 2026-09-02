@@ -1,4 +1,5 @@
-import { ChevronRight, MapPin } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import type { WorkOrder } from '../types';
 
 interface Props {
@@ -23,6 +24,27 @@ function when(timestamp: string) {
 }
 
 export function WorkOrderQueue({ orders, selectedId, onSelect }: Props) {
+  const [pageSize, setPageSize] = useState(10);
+  const [page, setPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(orders.length / pageSize));
+
+  useEffect(() => {
+    setPage(current => Math.min(current, totalPages));
+  }, [totalPages]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [orders.length, pageSize]);
+
+  const visible = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return orders.slice(start, start + pageSize);
+  }, [orders, page, pageSize]);
+
+  const startRow = orders.length ? (page - 1) * pageSize + 1 : 0;
+  const endRow = Math.min(page * pageSize, orders.length);
+
   return (
     <section className="queue-panel admin-queue-panel">
       <div className="admin-table-head" aria-hidden="true">
@@ -37,7 +59,7 @@ export function WorkOrderQueue({ orders, selectedId, onSelect }: Props) {
       </div>
 
       <div className="order-list admin-order-list">
-        {orders.map(order => (
+        {visible.map(order => (
           <button
             key={order.ticket_id}
             className={`admin-order-row ${selectedId === order.ticket_id ? 'selected' : ''}`}
@@ -56,7 +78,6 @@ export function WorkOrderQueue({ orders, selectedId, onSelect }: Props) {
             </div>
 
             <span className={`pill priority ${order.priority.toLowerCase()}`}>{order.priority}</span>
-
             <span className={`pill status ${order.status.toLowerCase().replaceAll(' ', '-')}`}>{order.status}</span>
 
             <div className="admin-assigned">
@@ -64,7 +85,6 @@ export function WorkOrderQueue({ orders, selectedId, onSelect }: Props) {
             </div>
 
             <div className="admin-updated">{ago(order.updated_at || order.timestamp)}</div>
-
             <ChevronRight className="row-arrow" size={18}/>
           </button>
         ))}
@@ -73,17 +93,39 @@ export function WorkOrderQueue({ orders, selectedId, onSelect }: Props) {
       </div>
 
       <div className="admin-pagination">
-        <span>Showing 1 to {Math.min(orders.length, 10)} of {orders.length} results</span>
-        <div>
-          <button disabled>‹</button>
-          <button className="active">1</button>
-          <button>2</button>
-          <button>3</button>
-          <span>…</span>
-          <button>6</button>
-          <button>›</button>
+        <span>Showing {startRow} to {endRow} of {orders.length} results</span>
+
+        <div className="pager-controls">
+          <button
+            type="button"
+            aria-label="Previous page"
+            disabled={page <= 1}
+            onClick={() => setPage(value => Math.max(1, value - 1))}
+          >
+            <ChevronLeft size={14}/>
+          </button>
+
+          <span className="pager-page">Page {page} of {totalPages}</span>
+
+          <button
+            type="button"
+            aria-label="Next page"
+            disabled={page >= totalPages}
+            onClick={() => setPage(value => Math.min(totalPages, value + 1))}
+          >
+            <ChevronRight size={14}/>
+          </button>
         </div>
-        <select defaultValue="10"><option value="10">10 / page</option><option value="25">25 / page</option></select>
+
+        <select
+          value={pageSize}
+          onChange={e => setPageSize(Number(e.target.value))}
+          aria-label="Rows per page"
+        >
+          <option value="10">10 / page</option>
+          <option value="25">25 / page</option>
+          <option value="50">50 / page</option>
+        </select>
       </div>
     </section>
   );

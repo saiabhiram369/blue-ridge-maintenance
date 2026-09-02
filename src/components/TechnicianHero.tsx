@@ -13,6 +13,8 @@ export function TechnicianHero({ technician, orders }: Props) {
 
   return (
     <section className="tech-3d-hero">
+      <img className="tech-campus-photo" src="/blue-ridge-campus-wallpaper.webp" alt="" aria-hidden="true"/>
+      <div className="tech-campus-photo-wash" aria-hidden="true"/>
       <div className="tech-3d-copy">
         <span className="tech-hero-kicker"><Sparkles size={14}/> FIELD WORKSPACE</span>
         <h2>Make the work visible.</h2>

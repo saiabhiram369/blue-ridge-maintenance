@@ -4,6 +4,8 @@ import type { WorkOrder } from '../types';
 
 interface Props {
   orders: WorkOrder[];
+  onSelectDate?: (date: Date) => void;
+  selectedDate?: Date | null;
 }
 
 type RangeMode = 'week' | 'month';
@@ -29,7 +31,7 @@ function toDate(value?: string | null) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-export function AdminInsights({ orders }: Props) {
+export function AdminInsights({ orders, onSelectDate, selectedDate=null }: Props) {
   const [range, setRange] = useState<RangeMode>('week');
   const today = new Date();
 
@@ -198,13 +200,18 @@ export function AdminInsights({ orders }: Props) {
 
         <div className="calendar-grid">
           {calendar.map((cell,index) => (
-            <div
+            <button
+              type="button"
               className={[
                 'calendar-day',
                 cell.date && sameDay(cell.date,today) ? 'today' : '',
+                cell.date && selectedDate && sameDay(cell.date,selectedDate) ? 'selected' : '',
                 cell.created || cell.closed ? 'has-work' : ''
               ].join(' ')}
               key={index}
+              disabled={!cell.date}
+              onClick={() => cell.date && onSelectDate?.(cell.date)}
+              aria-label={cell.date ? `Show work orders for ${cell.date.toLocaleDateString()}` : 'Empty calendar cell'}
             >
               {cell.date && (
                 <>
@@ -215,7 +222,7 @@ export function AdminInsights({ orders }: Props) {
                   </div>
                 </>
               )}
-            </div>
+            </button>
           ))}
         </div>
 

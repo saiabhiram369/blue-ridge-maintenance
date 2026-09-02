@@ -1,15 +1,12 @@
 import {
-  Camera, CheckCircle2, ChevronRight, ClipboardList, Mail, MapPin, Mountain,
-  Phone, ShieldCheck, Sparkles, UserRound
+  Camera, CheckCircle2, ChevronRight, ClipboardList, Mail, MapPin,
+  Menu, Phone, ShieldCheck, Sparkles, UserRound
 } from 'lucide-react';
-import emailjs from '@emailjs/browser';
 import { useState } from 'react';
 import { demoMode, supabase } from '../lib/supabase';
+import { notifyAdminsNewRequest } from '../lib/notifications';
 import type { Priority } from '../types';
 
-const EJS_PUBLIC_KEY = 'ATOjvujTTzM_lQ2DZ';
-const EJS_SERVICE_ID = 'service_rz1xa06';
-const EJS_TPL_NEW = 'template_sld7lxw';
 
 const categories = ['IT / Technology','General Maintenance','Electrical','Plumbing','HVAC / Climate','Carpentry / Structural','Grounds / Landscaping','Cleaning / Sanitation','Other'];
 const priorities: Priority[] = ['Low','Medium','High','Urgent'];
@@ -21,10 +18,11 @@ export function PublicRequest(){
   const [busy,setBusy]=useState(false);
   const [ticket,setTicket]=useState('');
   const [error,setError]=useState('');
+  const [notificationWarning,setNotificationWarning]=useState('');
   const set=(key:keyof typeof form,value:string)=>setForm(v=>({...v,[key]:value}));
 
   async function submit(e:React.FormEvent){
-    e.preventDefault(); setBusy(true); setError('');
+    e.preventDefault(); setBusy(true); setError(''); setNotificationWarning('');
     const ticketId='BR-'+crypto.randomUUID().slice(0,8).toUpperCase();
     try{
       if(!form.priority) throw new Error('Please choose a priority.');
@@ -47,21 +45,14 @@ export function PublicRequest(){
         });
         if(insertError) throw insertError;
 
-        emailjs.send(
-          EJS_SERVICE_ID,
-          EJS_TPL_NEW,
-          {
-            ticket_id: ticketId,
-            title: form.title,
-            from_name: form.name,
-            from_email: form.email,
-            category: form.category,
-            location: form.location,
-            priority: form.priority,
-            description: form.description
-          },
-          { publicKey: EJS_PUBLIC_KEY }
-        ).catch(err => console.warn('Email notification failed:', err));
+        try {
+          await notifyAdminsNewRequest(ticketId);
+        } catch (emailError) {
+          setNotificationWarning(
+            'Your request was saved, but the admin email notification could not be delivered yet.'
+          );
+          console.warn('Admin email notification failed:', emailError);
+        }
       }
       setTicket(ticketId);
     }catch(err){setError(err instanceof Error?err.message:'Unable to submit request.')}
@@ -69,36 +60,77 @@ export function PublicRequest(){
   }
 
   if(ticket) return <main className="ref-page">
-    <div className="ref-mountains" aria-hidden="true"><i/><i/><i/></div>
     <section className="ref-success">
-      <div><CheckCircle2 size={30}/></div><span>REQUEST RECEIVED</span><h1>Thank you.</h1>
+      <div className="ref-success-brand"><strong>Blue Ridge</strong><small>Preservation Maintenance</small></div>
+      <div className="ref-success-check"><CheckCircle2 size={30}/></div>
+      <span>REQUEST RECEIVED</span><h1>Thank you.</h1>
       <p>Your maintenance request has been created successfully.</p>
-      <strong>{ticket}</strong>
+      {notificationWarning && <div className="ref-success-warning" role="alert">{notificationWarning}</div>}
+      <strong className="ref-ticket-id">{ticket}</strong>
+      <div className="ref-success-summary">
+        <div><small>Location</small><strong>{form.location}</strong></div>
+        <div><small>Category</small><strong>{form.category}</strong></div>
+        <div><small>Priority</small><strong>{form.priority}</strong></div>
+        <div><small>Status</small><strong>Open</strong></div>
+      </div>
+      <div className="ref-success-status">
+        <i/>{notificationWarning ? 'Request saved · notification delivery pending' : 'Maintenance team notified'}
+      </div>
       <button onClick={()=>{setTicket('');setForm(emptyForm);setFiles([])}}>Submit another request</button>
     </section>
   </main>;
 
   return <main className="ref-page">
-    <div className="ref-mountains" aria-hidden="true"><i/><i/><i/></div>
 
     <header className="ref-desktop-header">
-      <div className="ref-header-brand"><Mountain size={34}/><strong>Blue Ridge Preservation Maintenance</strong></div>
-      <div className="ref-header-secure"><ShieldCheck size={13}/>Secure facility services</div>
+      <div className="ref-header-brand ref-text-brand"><strong>Blue Ridge</strong><small>Preservation Maintenance</small></div>
+      <nav className="ref-public-nav" aria-label="Public request navigation">
+        <a className="active" href="#maintenance-request-form">Submit Request</a>
+        <a href="https://artoflivingretreatcenter.org/contact/" target="_blank" rel="noreferrer">Contact Us</a>
+        <a className="ref-tech-login-link" href="/tech"><UserRound size={14}/>Technician Login</a>
+      </nav>
     </header>
 
     <header className="ref-mobile-header">
-      <div className="ref-mobile-brand"><Mountain size={25}/><strong>Blue Ridge Preservation Maintenance</strong></div>
-      <div className="ref-mobile-secure"><ShieldCheck size={12}/>Secure</div>
+      <div className="ref-mobile-brand ref-text-brand"><strong>Blue Ridge</strong><small>Preservation Maintenance</small></div>
+      <div className="ref-mobile-menu" aria-hidden="true"><Menu size={22}/></div>
     </header>
 
-    <form className="ref-card" onSubmit={submit}>
+    <div className="ref-request-stage">
+      <section className="ref-request-hero" aria-label="Blue Ridge campus">
+        <img className="ref-campus-photo" src="/blue-ridge-campus-wallpaper.webp" alt="Art of Living Retreat Center campus in the Blue Ridge Mountains"/>
+        <div className="ref-campus-photo-wash" aria-hidden="true"/>
+        <div className="ref-hero-copy">
+          <span>BLUE RIDGE PRESERVATION MAINTENANCE</span>
+          <h1>Care for Our<br/>Sacred Space</h1>
+          <div className="ref-hero-rule"><i/></div>
+          <p>Submit a maintenance request and help us keep our campus beautiful, safe, and welcoming.</p>
+          <button
+            className="ref-mobile-start"
+            type="button"
+            onClick={()=>document.getElementById('maintenance-request-form')?.scrollIntoView({behavior:'smooth',block:'start'})}
+          >
+            <span>Start a request</span><ChevronRight size={18}/>
+          </button>
+        </div>
+      </section>
+
+      <form id="maintenance-request-form" className="ref-card" onSubmit={submit}>
       <div className="ref-card-intro">
         <div>
-          <span className="ref-kicker">NEW MAINTENANCE REQUEST</span>
-          <h1>How can we help?</h1>
-          <p>Tell us what needs attention. We’ll route your request to the right team and keep you updated.</p>
+          <span className="ref-kicker">MAINTENANCE REQUEST</span>
+          <h1>New Maintenance Request</h1>
+          <p>Please provide the details of the issue.<br/>We’ll route it to the appropriate maintenance team.</p>
         </div>
-        <div className="ref-step"><strong>01</strong><small>of 01</small></div>
+        <div className="ref-request-pill">request</div>
+      </div>
+
+      <div className="ref-progress-rail" aria-hidden="true">
+        {['Your details','Issue','Location','Photos','Review'].map((label,index)=>
+          <span key={label} className={index===0?'active':''}>
+            <b>{index+1}</b><small>{label}</small>
+          </span>
+        )}
       </div>
 
       <section className="ref-section">
@@ -113,11 +145,11 @@ export function PublicRequest(){
       <section className="ref-section">
         <div className="ref-section-title"><span><ClipboardList size={17}/></span><strong>REQUEST DETAILS</strong></div>
         <div className="ref-grid two">
-          <label>Category<select required value={form.category} onChange={e=>set('category',e.target.value)}><option value="">Select service category</option>{categories.map(c=><option key={c}>{c}</option>)}</select></label>
-          <label>Location<div className="ref-field"><MapPin size={15}/><input required value={form.location} onChange={e=>set('location',e.target.value)} placeholder="New River 111"/></div></label>
+          <label>Category <b className="required-mark">*</b><select required value={form.category} onChange={e=>set('category',e.target.value)}><option value="">Select service category</option>{categories.map(c=><option key={c}>{c}</option>)}</select></label>
+          <label>Location <b className="required-mark">*</b><div className="ref-field"><MapPin size={15}/><input required value={form.location} onChange={e=>set('location',e.target.value)} placeholder="New River 111"/></div></label>
         </div>
-        <label>Issue title<input required value={form.title} onChange={e=>set('title',e.target.value)} placeholder="Describe the issue in a few words"/></label>
-        <label>Description<textarea required value={form.description} onChange={e=>set('description',e.target.value)} placeholder="What happened? When did it start? Is anyone impacted?"/></label>
+        <label>Issue title <b className="required-mark">*</b><input required value={form.title} onChange={e=>set('title',e.target.value)} placeholder="Describe the issue in a few words"/></label>
+        <label>Description <b className="required-mark">*</b><textarea required value={form.description} onChange={e=>set('description',e.target.value)} placeholder="What happened? When did it start? Is anyone impacted?"/></label>
       </section>
 
       <div className="ref-bottom-grid">
@@ -134,6 +166,7 @@ export function PublicRequest(){
       {error&&<div className="ref-error">{error}</div>}
       <button className="ref-submit" disabled={busy}><span>{busy?'Submitting…':'Submit maintenance request'}</span><ChevronRight size={18}/></button>
       <div className="ref-privacy"><ShieldCheck size={12}/>Your request is securely recorded and visible only to authorized facilities staff.</div>
-    </form>
+      </form>
+    </div>
   </main>;
 }
