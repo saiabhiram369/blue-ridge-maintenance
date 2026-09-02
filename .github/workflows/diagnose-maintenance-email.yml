@@ -1,0 +1,36 @@
+name: Diagnose Maintenance Email
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Call production maintenance-email function
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SUPABASE_URL="$(grep -oP "FALLBACK_URL = '\\K[^']+" src/lib/supabase.ts)"
+          ANON_KEY="$(grep -oP "FALLBACK_ANON_KEY = '\\K[^']+" src/lib/supabase.ts)"
+
+          echo "Calling maintenance-email for BR-4AC5BB21"
+          http_code="$(curl -sS -o /tmp/email-response.txt -w "%{http_code}" \
+            "$SUPABASE_URL/functions/v1/maintenance-email" \
+            -H "Content-Type: application/json" \
+            -H "apikey: $ANON_KEY" \
+            -H "Authorization: Bearer $ANON_KEY" \
+            --data '{"event":"new_request","ticketId":"BR-4AC5BB21"}')"
+
+          echo "HTTP $http_code"
+          cat /tmp/email-response.txt
+          echo
+
+          # Keep the job green so the response is always available in logs.
+          exit 0
