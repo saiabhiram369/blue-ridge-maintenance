@@ -76,7 +76,13 @@ export function Sidebar({
           <div className="avatar avatar-fallback">{profile?.full_name?.slice(0, 1) || 'T'}</div>
           <div className="sidebar-user-copy">
             <strong>{profile?.full_name || 'Operations'}</strong>
-            <small>{profile?.role === 'technician' ? 'Technician' : 'Admin'}</small>
+            <small>{
+              profile?.full_name === 'Abhiram'
+                ? 'Admin · Technician'
+                : profile?.role === 'technician'
+                  ? 'Technician'
+                  : 'Admin'
+            }</small>
           </div>
           <button onClick={onLogout} title="Sign out"><LogOut size={17} /></button>
         </div>
