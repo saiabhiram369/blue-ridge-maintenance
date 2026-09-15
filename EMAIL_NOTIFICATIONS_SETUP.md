@@ -23,9 +23,24 @@ Use a comma-separated list, for example:
 
 These addresses are used only for operational notifications. They are not used for login.
 
-## 3. Deploy Edge Function
+## 3. EmailJS private key
 
-Create/deploy:
+In EmailJS Account > Security:
+
+- Keep `Allow EmailJS API for non-browser applications` enabled.
+- Enable `Use Private Key (recommended)`.
+
+Copy the EmailJS private key from the EmailJS account settings and store it only in Supabase Edge Function secrets as:
+
+`EMAILJS_PRIVATE_KEY`
+
+Do not place the private key in the frontend, Vercel environment variables exposed to the browser, or the GitHub repository.
+
+The Edge Function sends this value to EmailJS as the REST API `accessToken`.
+
+## 4. Deploy Edge Function
+
+Deploy:
 
 `supabase/functions/maintenance-email/index.ts`
 
@@ -36,11 +51,11 @@ Function name:
 Set **Verify JWT with legacy secret = OFF**.
 
 The function performs its own authorization:
-- new_request can be invoked after a public request is created;
-- technician_completed requires an authenticated assigned technician or admin;
-- requester_resolved requires an authenticated admin.
+- `new_request` can be invoked after a public request is created;
+- `technician_completed` requires an authenticated assigned technician or admin;
+- `requester_resolved` requires an authenticated admin.
 
-## 4. Notification workflow
+## 5. Notification workflow
 
 - New request: admin in-app notification + admin email.
 - Technician marks done: admin approval notification + email to configured admins.
