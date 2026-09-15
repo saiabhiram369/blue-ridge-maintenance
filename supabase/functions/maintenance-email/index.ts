@@ -31,6 +31,18 @@ function adminEmails() {
     .filter(Boolean);
 }
 
+function emailJsPrivateKey() {
+  const key = Deno.env.get('EMAILJS_PRIVATE_KEY');
+
+  if (!key) {
+    throw new Error(
+      'EMAILJS_PRIVATE_KEY is not configured in Supabase Edge Function secrets.'
+    );
+  }
+
+  return key;
+}
+
 async function sendEmail(templateId: string, params: Record<string, unknown>) {
   const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
     method: 'POST',
@@ -39,6 +51,7 @@ async function sendEmail(templateId: string, params: Record<string, unknown>) {
       service_id: EMAILJS_SERVICE_ID,
       template_id: templateId,
       user_id: EMAILJS_PUBLIC_KEY,
+      accessToken: emailJsPrivateKey(),
       template_params: params
     })
   });
