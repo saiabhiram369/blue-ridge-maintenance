@@ -49,6 +49,7 @@ export function WorkOrderInspector({
     </aside>
   );
 
+  const ticketId = order.ticket_id;
   const statusOptions = adminStatuses.filter(status =>
     status !== 'Resolved'
     || order.status === 'Resolved'
@@ -88,7 +89,7 @@ export function WorkOrderInspector({
         tech_note_seen: false,
         updated_at: new Date().toISOString()
       })
-      .eq('ticket_id', order.ticket_id);
+      .eq('ticket_id', ticketId);
 
     if (error) {
       setTechNoteMessage(error.message);
