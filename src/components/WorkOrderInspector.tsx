@@ -1,6 +1,8 @@
 import {
   CalendarDays, CheckCircle2, Circle, MapPin, UserRoundPlus, X
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { demoMode, supabase } from '../lib/supabase';
 import type { WorkOrder, WorkOrderStatus } from '../types';
 
 interface Props {
@@ -28,6 +30,15 @@ export function WorkOrderInspector({
   isTechnician,
   canResolve
 }: Props) {
+  const [techNoteDraft, setTechNoteDraft] = useState(order?.tech_note || '');
+  const [savingTechNote, setSavingTechNote] = useState(false);
+  const [techNoteMessage, setTechNoteMessage] = useState('');
+
+  useEffect(() => {
+    setTechNoteDraft(order?.tech_note || '');
+    setTechNoteMessage('');
+  }, [order?.ticket_id, order?.tech_note]);
+
   if (!order) return (
     <aside className="inspector admin-inspector inspector-empty">
       <div>
@@ -55,6 +66,38 @@ export function WorkOrderInspector({
   const photos = (order.photos || []).filter(Boolean).slice(0,2);
   const awaitingTiffany = order.status === 'Pending Tiffany' || !!order.tech_marked_done;
   const resolved = order.status === 'Resolved';
+  const technicianNoteLocked = resolved || awaitingTiffany;
+
+  async function saveTechnicianNote() {
+    if (!isTechnician || technicianNoteLocked || savingTechNote) return;
+
+    const note = techNoteDraft.trim();
+    setSavingTechNote(true);
+    setTechNoteMessage('');
+
+    if (demoMode) {
+      setTechNoteMessage('Demo: technician note saved.');
+      setSavingTechNote(false);
+      return;
+    }
+
+    const { error } = await supabase
+      .from('maintenance_requests')
+      .update({
+        tech_note: note || null,
+        tech_note_seen: false,
+        updated_at: new Date().toISOString()
+      })
+      .eq('ticket_id', order.ticket_id);
+
+    if (error) {
+      setTechNoteMessage(error.message);
+    } else {
+      setTechNoteMessage(note ? 'Technician note saved.' : 'Technician note cleared.');
+    }
+
+    setSavingTechNote(false);
+  }
 
   return (
     <aside className="inspector admin-inspector">
@@ -122,6 +165,65 @@ export function WorkOrderInspector({
         </div>
       </div>
 
+      {(isTechnician || !!order.tech_note) && (
+        <div className="inspector-section">
+          <label>TECHNICIAN NOTES</label>
+
+          {isTechnician ? (
+            <>
+              <textarea
+                value={techNoteDraft}
+                onChange={e => setTechNoteDraft(e.target.value)}
+                disabled={technicianNoteLocked || savingTechNote}
+                maxLength={2000}
+                placeholder="Add troubleshooting details, parts used, observations, or anything the admin should know."
+                style={{
+                  width:'100%',
+                  minHeight:110,
+                  resize:'vertical',
+                  boxSizing:'border-box',
+                  border:'1px solid rgba(15,23,42,.14)',
+                  borderRadius:14,
+                  padding:'12px 14px',
+                  font:'inherit',
+                  lineHeight:1.5,
+                  background:technicianNoteLocked ? 'rgba(15,23,42,.035)' : '#fff',
+                  color:'inherit',
+                  outline:'none'
+                }}
+              />
+
+              <div style={{display:'flex',justifyContent:'space-between',gap:12,alignItems:'center',marginTop:10,flexWrap:'wrap'}}>
+                <small style={{opacity:.66}}>
+                  {technicianNoteLocked
+                    ? 'Notes are locked after the work is submitted for admin approval.'
+                    : `${techNoteDraft.length}/2000 characters`}
+                </small>
+
+                {!technicianNoteLocked && (
+                  <button
+                    type="button"
+                    className="admin-note-button"
+                    onClick={saveTechnicianNote}
+                    disabled={savingTechNote}
+                  >
+                    {savingTechNote ? 'Saving…' : 'Save Technician Note'}
+                  </button>
+                )}
+              </div>
+
+              {techNoteMessage && (
+                <div style={{marginTop:10,fontSize:13,fontWeight:600}} role="status">
+                  {techNoteMessage}
+                </div>
+              )}
+            </>
+          ) : (
+            <p className="description-copy">{order.tech_note}</p>
+          )}
+        </div>
+      )}
+
       <div className="inspector-section">
         <label>ACTIVITY TIMELINE</label>
         <div className="timeline admin-activity">
@@ -160,7 +262,7 @@ export function WorkOrderInspector({
           ) : (
             <>
               <p className="tech-action-help">
-                When the work is physically complete, mark it done. It will move to the admin approval queue for final verification.
+                Add any technician notes above before marking the work complete. When the work is physically complete, mark it done and it will move to the admin approval queue.
               </p>
               <button className="tech-mark-done-button" onClick={onMarkWorkDone}>
                 <CheckCircle2 size={18}/>
