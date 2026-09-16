@@ -217,8 +217,8 @@ export function SettingsPanel() {
         <div className="settings-card">
           <BellRing size={21}/>
           <div>
-            <strong>Completion notifications</strong>
-            <span>All admins receive an in-app notification after technician completion; the requester is notified after final resolution.</span>
+            <strong>Technician updates</strong>
+            <span>Admins receive in-app notifications for technician notes and completion updates. Active work can be placed on hold when parts or follow-up work are needed.</span>
           </div>
         </div>
         <div className="settings-card">
@@ -277,6 +277,7 @@ export function NotificationPanel({
           {activeNotifications.map(item => {
             const order = orders.find(order => order.ticket_id === item.ticket_id);
             const unread = unreadIds.has(item.id);
+            const isNoteUpdate = item.event_type === 'technician_note_updated';
 
             return (
               <button
@@ -291,7 +292,9 @@ export function NotificationPanel({
                 <div className="notification-icon">
                   {item.event_type === 'new_request'
                     ? <BellRing size={17}/>
-                    : <CheckCircle2 size={17}/>}
+                    : isNoteUpdate
+                      ? <Wrench size={17}/>
+                      : <CheckCircle2 size={17}/>}
                 </div>
                 <div>
                   <strong>{item.ticket_id} · {item.title}</strong>
@@ -299,9 +302,13 @@ export function NotificationPanel({
                   <small>
                     {item.event_type === 'new_request'
                       ? 'New request submitted'
-                      : item.technician
-                        ? `Completed by ${item.technician}`
-                        : 'Ready for admin review'}
+                      : isNoteUpdate
+                        ? item.technician
+                          ? `Update from ${item.technician}`
+                          : 'Technician update'
+                        : item.technician
+                          ? `Completed by ${item.technician}`
+                          : 'Ready for admin review'}
                   </small>
                 </div>
                 {unread && <i className="notification-unread-dot"/>}
@@ -332,7 +339,7 @@ export function NotificationPanel({
         </div>
 
         <div className="notification-footnote">
-          Tiffany is the primary reviewer. Any authorized admin may verify and close completed work if she is unavailable.
+          Tiffany is the primary reviewer. She can close completed work or place it on hold when parts or additional work are needed; another authorized admin may act if she is unavailable.
         </div>
       </aside>
     </>
