@@ -67,10 +67,9 @@ export function WorkOrderInspector({
   const photos = (order.photos || []).filter(Boolean).slice(0,2);
   const awaitingTiffany = order.status === 'Pending Tiffany' || !!order.tech_marked_done;
   const resolved = order.status === 'Resolved';
-  const technicianNoteLocked = resolved;
 
   async function saveTechnicianNote() {
-    if (!isTechnician || technicianNoteLocked || savingTechNote) return;
+    if (!isTechnician || resolved || savingTechNote) return;
 
     const note = techNoteDraft.trim();
     setSavingTechNote(true);
@@ -172,12 +171,12 @@ export function WorkOrderInspector({
         <div className="inspector-section">
           <label>TECHNICIAN NOTES</label>
 
-          {isTechnician ? (
+          {isTechnician && !resolved ? (
             <>
               <textarea
                 value={techNoteDraft}
                 onChange={e => setTechNoteDraft(e.target.value)}
-                disabled={technicianNoteLocked || savingTechNote}
+                disabled={savingTechNote}
                 maxLength={2000}
                 placeholder="Add what happened, troubleshooting details, parts needed or ordered, work performed, and follow-up information for the admin team."
                 style={{
@@ -190,7 +189,7 @@ export function WorkOrderInspector({
                   padding:'12px 14px',
                   font:'inherit',
                   lineHeight:1.5,
-                  background:technicianNoteLocked ? 'rgba(15,23,42,.035)' : '#fff',
+                  background:'#fff',
                   color:'inherit',
                   outline:'none'
                 }}
@@ -198,25 +197,21 @@ export function WorkOrderInspector({
 
               <div style={{display:'flex',justifyContent:'space-between',gap:12,alignItems:'center',marginTop:10,flexWrap:'wrap'}}>
                 <small style={{opacity:.66}}>
-                  {technicianNoteLocked
-                    ? 'This work order is resolved, so technician notes are read-only.'
-                    : order.status === 'On Hold'
-                      ? 'Keep this note updated while parts or follow-up work are pending.'
-                      : order.status === 'Pending Tiffany'
-                        ? 'You can continue updating this note while the admin reviews the work.'
-                        : `${techNoteDraft.length}/2000 characters`}
+                  {order.status === 'On Hold'
+                    ? 'Keep this note updated while parts or follow-up work are pending.'
+                    : order.status === 'Pending Tiffany'
+                      ? 'You can continue updating this note while the admin reviews the work.'
+                      : `${techNoteDraft.length}/2000 characters`}
                 </small>
 
-                {!technicianNoteLocked && (
-                  <button
-                    type="button"
-                    className="admin-note-button"
-                    onClick={saveTechnicianNote}
-                    disabled={savingTechNote}
-                  >
-                    {savingTechNote ? 'Saving…' : 'Save Technician Note'}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  className="admin-note-button"
+                  onClick={saveTechnicianNote}
+                  disabled={savingTechNote}
+                >
+                  {savingTechNote ? 'Saving…' : 'Save Technician Note'}
+                </button>
               </div>
 
               {techNoteMessage && (
@@ -226,7 +221,12 @@ export function WorkOrderInspector({
               )}
             </>
           ) : (
-            <p className="description-copy">{order.tech_note}</p>
+            <>
+              <p className="description-copy">{order.tech_note || 'No technician notes were added.'}</p>
+              {isTechnician && resolved && (
+                <small style={{opacity:.66}}>This work order has been closed by an admin, so the technician log is read-only.</small>
+              )}
+            </>
           )}
         </div>
       )}
@@ -262,14 +262,14 @@ export function WorkOrderInspector({
             <div className="tech-workflow-message waiting">
               <CheckCircle2 size={18}/>
               <div>
-                <strong>Admin review in progress</strong>
-                <span>You can continue updating the technician note above. The admin may close the ticket or place it on hold if parts or additional work are needed.</span>
+                <strong>Work submitted for review</strong>
+                <span>You can continue updating technician notes while the admin reviews the work. The admin may close it or put it on hold for parts or additional work.</span>
               </div>
             </div>
           ) : (
             <>
               <p className="tech-action-help">
-                Keep the technician note updated with what happened, parts needed, and work performed. When the work is ready for admin review, mark it done.
+                Keep the technician note updated with what happened, parts needed, work performed, and follow-up details. When the work is ready for admin review, mark it done.
               </p>
               <button className="tech-mark-done-button" onClick={onMarkWorkDone}>
                 <CheckCircle2 size={18}/>
