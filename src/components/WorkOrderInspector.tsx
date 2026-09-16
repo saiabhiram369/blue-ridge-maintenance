@@ -67,7 +67,7 @@ export function WorkOrderInspector({
   const photos = (order.photos || []).filter(Boolean).slice(0,2);
   const awaitingTiffany = order.status === 'Pending Tiffany' || !!order.tech_marked_done;
   const resolved = order.status === 'Resolved';
-  const technicianNoteLocked = resolved || awaitingTiffany;
+  const technicianNoteLocked = resolved;
 
   async function saveTechnicianNote() {
     if (!isTechnician || technicianNoteLocked || savingTechNote) return;
@@ -77,7 +77,7 @@ export function WorkOrderInspector({
     setTechNoteMessage('');
 
     if (demoMode) {
-      setTechNoteMessage('Demo: technician note saved.');
+      setTechNoteMessage('Demo: technician note saved and admin notified.');
       setSavingTechNote(false);
       return;
     }
@@ -94,7 +94,9 @@ export function WorkOrderInspector({
     if (error) {
       setTechNoteMessage(error.message);
     } else {
-      setTechNoteMessage(note ? 'Technician note saved.' : 'Technician note cleared.');
+      setTechNoteMessage(note
+        ? 'Technician note saved. The admin team has been notified.'
+        : 'Technician note cleared.');
     }
 
     setSavingTechNote(false);
@@ -177,10 +179,10 @@ export function WorkOrderInspector({
                 onChange={e => setTechNoteDraft(e.target.value)}
                 disabled={technicianNoteLocked || savingTechNote}
                 maxLength={2000}
-                placeholder="Add troubleshooting details, parts used, observations, or anything the admin should know."
+                placeholder="Add what happened, troubleshooting details, parts needed or ordered, work performed, and follow-up information for the admin team."
                 style={{
                   width:'100%',
-                  minHeight:110,
+                  minHeight:120,
                   resize:'vertical',
                   boxSizing:'border-box',
                   border:'1px solid rgba(15,23,42,.14)',
@@ -197,8 +199,12 @@ export function WorkOrderInspector({
               <div style={{display:'flex',justifyContent:'space-between',gap:12,alignItems:'center',marginTop:10,flexWrap:'wrap'}}>
                 <small style={{opacity:.66}}>
                   {technicianNoteLocked
-                    ? 'Notes are locked after the work is submitted for admin approval.'
-                    : `${techNoteDraft.length}/2000 characters`}
+                    ? 'This work order is resolved, so technician notes are read-only.'
+                    : order.status === 'On Hold'
+                      ? 'Keep this note updated while parts or follow-up work are pending.'
+                      : order.status === 'Pending Tiffany'
+                        ? 'You can continue updating this note while the admin reviews the work.'
+                        : `${techNoteDraft.length}/2000 characters`}
                 </small>
 
                 {!technicianNoteLocked && (
@@ -256,14 +262,14 @@ export function WorkOrderInspector({
             <div className="tech-workflow-message waiting">
               <CheckCircle2 size={18}/>
               <div>
-                <strong>Work marked done</strong>
-                <span>Awaiting admin verification. Tiffany is the primary reviewer; another admin may close it if needed.</span>
+                <strong>Admin review in progress</strong>
+                <span>You can continue updating the technician note above. The admin may close the ticket or place it on hold if parts or additional work are needed.</span>
               </div>
             </div>
           ) : (
             <>
               <p className="tech-action-help">
-                Add any technician notes above before marking the work complete. When the work is physically complete, mark it done and it will move to the admin approval queue.
+                Keep the technician note updated with what happened, parts needed, and work performed. When the work is ready for admin review, mark it done.
               </p>
               <button className="tech-mark-done-button" onClick={onMarkWorkDone}>
                 <CheckCircle2 size={18}/>
