@@ -30,11 +30,10 @@ export interface Profile {
   can_resolve?: boolean;
 }
 
-
 export interface AdminNotification {
   id: string;
   ticket_id: string;
-  event_type: 'new_request' | 'technician_completed' | 'needs_assignment';
+  event_type: 'new_request' | 'technician_completed' | 'technician_note_updated' | 'needs_assignment';
   title: string;
   message: string;
   technician?: string | null;
