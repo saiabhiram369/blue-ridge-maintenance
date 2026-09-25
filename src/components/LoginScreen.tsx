@@ -6,8 +6,8 @@ interface Props {
   onAuthenticated: () => void;
 }
 
-const adminNames = ['Abhiram', 'Tiffany', 'Catherine', 'Corey'];
-const technicianNames = ['Ethan', 'Eric'];
+const adminNames = ['Abhiram', 'Tiffany', 'Catherine', 'Corey', 'Jim'];
+const technicianNames = ['Ethan', 'Eric', 'Jim'];
 
 export function LoginScreen({ onAuthenticated }: Props) {
   const isTech = window.location.pathname.toLowerCase().startsWith('/tech');
