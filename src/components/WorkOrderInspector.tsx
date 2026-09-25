@@ -142,6 +142,7 @@ export function WorkOrderInspector({
                 <option>Abhiram</option>
                 <option>Ethan</option>
                 <option>Eric</option>
+                <option>Jim</option>
               </select>
             </div>
           ) : (
