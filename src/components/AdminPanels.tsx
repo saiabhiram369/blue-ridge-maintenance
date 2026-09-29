@@ -12,7 +12,7 @@ interface TechniciansProps {
 
 export function TechniciansPanel({ orders, onOpenTechnician }: TechniciansProps) {
   const technicians = useMemo(() => {
-    const names = ['Abhiram','Ethan','Eric','Jim'];
+    const names = ['Abhiram','Ethan','Eric','Jim','Mathew'];
     return names.map(name => {
       const assigned = orders.filter(order => order.technician === name);
       return {
